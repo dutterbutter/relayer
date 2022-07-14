@@ -36,6 +36,7 @@ use std::path::Path;
 use ethereum_types::{Address, U256};
 use serde::{Deserialize, Serialize};
 use webb::substrate::subxt::sp_core::sr25519::Public;
+use webb_proposals::TypedChainId;
 
 use crate::types::private_key::PrivateKey;
 use crate::types::rpc_url::RpcUrl;
@@ -112,9 +113,13 @@ pub struct EvmChainConfig {
     /// for transactions and contracts.
     #[serde(skip_serializing)]
     pub explorer: Option<url::Url>,
-    /// chain specific id.
+    /// chain name. This is the value that the toml or json configs are grouped on,
+    /// before being loaded into the relayer on startup. LinkedAnchor entries are
+    /// indexed on the name.
+    pub name: String,
+    /// chain specific evm id. (The output of chainId opcode sent to EVM)
     #[serde(rename(serialize = "chainId"))]
-    pub chain_id: u64,
+    pub chain_id: u32,
     /// The Private Key of this account on this network
     /// the format is more dynamic here:
     /// 1. if it starts with '0x' then this would be raw (64 bytes) hex encoded
@@ -162,9 +167,13 @@ pub struct SubstrateConfig {
     /// for transactions and contracts.
     #[serde(skip_serializing)]
     pub explorer: Option<url::Url>,
-    /// chain specific id.
+    /// chain name. This is the value that the toml or json configs are grouped on,
+    /// before being loaded into the relayer on startup. LinkedAnchor entries are
+    /// indexed on the name.
+    pub name: String,
+    /// chain specific id. (The output of ChainIdentifier parameter in linkable-tree pallets)
     #[serde(rename(serialize = "chainId"))]
-    pub chain_id: u64,
+    pub chain_id: u32,
     /// Interprets the string in order to generate a key Pair. in the
     /// case that the pair can be expressed as a direct derivation from a seed (some cases, such as Sr25519 derivations
     /// with path components, cannot).
@@ -598,9 +607,9 @@ fn postloading_process(
         .drain()
         .filter(|(_, chain)| chain.enabled)
         .collect::<HashMap<_, _>>();
-    // 2. insert them again, as lowercased.
+    // 2. Replace names with TypedChainId values
     for (_, v) in old_evm {
-        config.evm.insert(v.chain_id.to_string(), v);
+        config.evm.insert(TypedChainId::Evm(v.chain_id).chain_id().to_string(), v);
     }
     // do the same for substrate
     let old_substrate = config
@@ -609,7 +618,7 @@ fn postloading_process(
         .filter(|(_, chain)| chain.enabled)
         .collect::<HashMap<_, _>>();
     for (_, v) in old_substrate {
-        config.substrate.insert(v.chain_id.to_string(), v);
+        config.substrate.insert(TypedChainId::Substrate(v.chain_id).chain_id().to_string(), v);
     }
     // check that all required chains are already present in the config.
     for (chain_id, chain_config) in &config.evm {
@@ -678,10 +687,10 @@ fn postloading_process(
                             );
                         } else {
                             for linked_anchor in linked_anchors {
-                                let chain = linked_anchor.chain.to_lowercase();
+                                let chain = linked_anchor.chain.clone();
                                 let chain_defined =
-                                    config.evm.contains_key(&chain);
-                                if !chain_defined {
+                                    config.evm.clone().into_values().find(|x| x.name.eq(&chain));
+                                if chain_defined.is_none() {
                                     tracing::warn!("!!WARNING!!: chain {} is not defined in the config.
                                         which is required by the Anchor Contract ({}) defined on {} chain.
                                         Please, define it manually, to allow the relayer to work properly.",
@@ -765,10 +774,10 @@ fn postloading_process(
                             );
                         } else {
                             for linked_anchor in linked_anchors {
-                                let chain = linked_anchor.chain.to_lowercase();
+                                let chain = linked_anchor.chain.clone();
                                 let chain_defined =
-                                    config.evm.contains_key(&chain);
-                                if !chain_defined {
+                                    config.evm.clone().into_values().find(|x| x.name.eq(&chain));
+                                if chain_defined.is_none() {
                                     tracing::warn!("!!WARNING!!: chain {} is not defined in the config.
                                         which is required by the Anchor Contract ({}) defined on {} chain.
                                         Please, define it manually, to allow the relayer to work properly.",

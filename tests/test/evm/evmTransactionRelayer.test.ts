@@ -198,7 +198,7 @@ describe('EVM Transaction Relayer', function () {
 
     // now we call relayer leaf API to check no of leaves stored in LeafStorageCache
     // are equal to no of deposits made.
-    const chainId = localChain1.underlyingChainId.toString(16);
+    const chainId = localChain1.chainId;
     const response = await webbRelayer.getLeavesEvm(
       chainId,
       anchor1.contract.address
@@ -235,7 +235,7 @@ describe('EVM Transaction Relayer', function () {
     );
 
     const relayerInfo = await webbRelayer.info();
-    const localChain1Info = relayerInfo.evm[localChain1.underlyingChainId];
+    const localChain1Info = relayerInfo.evm[localChain1.chainId];
     const relayerFeePercentage =
       localChain1Info?.contracts.find(
         (c) => c.address === anchor1.contract.address
@@ -260,7 +260,7 @@ describe('EVM Transaction Relayer', function () {
     await webbRelayer.ping();
     // now send the withdrawal request.
     const txHash = await webbRelayer.anchorWithdraw(
-      localChain1.underlyingChainId.toString(),
+      localChain1.chainId,
       anchor1.getAddress(),
       publicInputs,
       extData
@@ -295,7 +295,7 @@ describe('EVM Transaction Relayer', function () {
     // now send the withdrawal request with a wrong recipient address
     try {
       await webbRelayer.anchorWithdraw(
-        localChain1.underlyingChainId.toString(),
+        localChain1.chainId,
         wallet2.address,
         publicInputs,
         extData
@@ -330,7 +330,7 @@ describe('EVM Transaction Relayer', function () {
     // now send the withdrawal request with a wrong recipient address
     try {
       await webbRelayer.anchorWithdraw(
-        localChain1.underlyingChainId.toString(),
+        localChain1.chainId,
         anchor1.getAddress(),
         publicInputs,
         extData
@@ -365,7 +365,7 @@ describe('EVM Transaction Relayer', function () {
     // now send the withdrawal request with a wrong recipient address
     try {
       await webbRelayer.anchorWithdraw(
-        localChain1.underlyingChainId.toString(),
+        localChain1.chainId,
         anchor1.getAddress(),
         publicInputs,
         extData
@@ -431,7 +431,7 @@ async function initWithdrawal(
   );
 
   const relayerInfo = await webbRelayer.info();
-  const localChain1Info = relayerInfo.evm[localChain.underlyingChainId];
+  const localChain1Info = relayerInfo.evm[localChain.chainId];
   const relayerFeePercentage =
     localChain1Info?.contracts.find(
       (c) => c.address === anchor.contract.address

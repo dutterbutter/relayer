@@ -287,7 +287,7 @@ describe.skip('SignatureBridge Governor Updates', function () {
         kind: 'tx_queue',
         event: {
           ty: 'EVM',
-          chain_id: localChain1.underlyingChainId.toString(),
+          chain_id: localChain1.chainId,
           finalized: true,
         },
       }),

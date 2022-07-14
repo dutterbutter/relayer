@@ -35,7 +35,7 @@ pub async fn handle_vanchor_relay_tx<'a>(
         _ => return,
     };
 
-    let requested_chain = cmd.chain_id;
+    let requested_chain = cmd.typed_chain_id;
     let chain = match ctx.config.evm.get(&requested_chain.to_string()) {
         Some(v) => v,
         None => {
@@ -71,22 +71,22 @@ pub async fn handle_vanchor_relay_tx<'a>(
     {
         Some(cfg) => cfg,
         None => {
-            tracing::error!("Misconfigured Network : ({}). Please set withdraw configuration.", cmd.chain_id);
+            tracing::error!("Misconfigured Network : ({}). Please set withdraw configuration.", cmd.typed_chain_id);
             let _ = stream
-                .send(Error(format!("Misconfigured Network : ({}). Please set withdraw configuration.", cmd.chain_id)))
+                .send(Error(format!("Misconfigured Network : ({}). Please set withdraw configuration.", cmd.typed_chain_id)))
                 .await;
             return;
         }
     };
 
-    let wallet = match ctx.evm_wallet(&cmd.chain_id.to_string()).await {
+    let wallet = match ctx.evm_wallet(&cmd.typed_chain_id.to_string()).await {
         Ok(v) => v,
         Err(e) => {
             tracing::error!("Misconfigured Network: {}", e);
             let _ = stream
                 .send(Error(format!(
                     "Misconfigured Network: {:?}",
-                    cmd.chain_id
+                    cmd.typed_chain_id
                 )))
                 .await;
             return;
@@ -117,11 +117,11 @@ pub async fn handle_vanchor_relay_tx<'a>(
 
     tracing::debug!(
         "Connecting to chain {:?} .. at {}",
-        cmd.chain_id,
+        cmd.typed_chain_id,
         chain.http_endpoint
     );
     let _ = stream.send(Network(NetworkStatus::Connecting)).await;
-    let provider = match ctx.evm_provider(&cmd.chain_id.to_string()).await {
+    let provider = match ctx.evm_provider(&cmd.typed_chain_id.to_string()).await {
         Ok(value) => {
             let _ = stream.send(Network(NetworkStatus::Connected)).await;
             value
@@ -186,6 +186,6 @@ pub async fn handle_vanchor_relay_tx<'a>(
     };
     tracing::trace!(?proof, ?ext_data, "Client Proof");
     let call = contract.transact(proof, ext_data);
-    tracing::trace!("About to send Tx to {:?} Chain", cmd.chain_id);
+    tracing::trace!("About to send Tx to {:?} Chain", cmd.typed_chain_id);
     handle_evm_tx(call, stream).await;
 }

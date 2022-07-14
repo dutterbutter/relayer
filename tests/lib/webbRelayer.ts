@@ -97,14 +97,14 @@ export class WebbRelayer {
     return response.json() as Promise<WebbRelayerInfo>;
   }
   // data querying api for evm
-  public async getLeavesEvm(chainId: string, contractAddress: string) {
-    const endpoint = `http://127.0.0.1:${this.opts.port}/api/v1/leaves/evm/${chainId}/${contractAddress}`;
+  public async getLeavesEvm(chainId: number, contractAddress: string) {
+    const endpoint = `http://127.0.0.1:${this.opts.port}/api/v1/leaves/evm/${chainId.toString(16)}/${contractAddress}`;
     const response = await fetch(endpoint);
     return response;
   }
   // data querying api for substrate
-  public async getLeavesSubstrate(chainId: string, treeId: string) {
-    const endpoint = `http://127.0.0.1:${this.opts.port}/api/v1/leaves/substrate/${chainId}/${treeId}`;
+  public async getLeavesSubstrate(chainId: number, treeId: string) {
+    const endpoint = `http://127.0.0.1:${this.opts.port}/api/v1/leaves/substrate/${chainId.toString(16)}/${treeId}`;
     const response = await fetch(endpoint);
     return response;
   }
@@ -178,7 +178,7 @@ export class WebbRelayer {
   }
 
   public async anchorWithdraw(
-    chainName: string,
+    chainId: number,
     anchorAddress: string,
     publicInputs: IFixedAnchorPublicInputs,
     extData: IFixedAnchorExtData
@@ -187,7 +187,7 @@ export class WebbRelayer {
     // create a new websocket connection to the relayer.
     const ws = new WebSocket(wsEndpoint);
     await new Promise((resolve) => ws.once('open', resolve));
-    const input = { chainName, anchorAddress, publicInputs, extData };
+    const input = { chainId, anchorAddress, publicInputs, extData };
     return txHashOrReject(ws, input);
   }
 
@@ -278,12 +278,12 @@ export function calculateRelayerFees(
 async function txHashOrReject(
   ws: WebSocket,
   {
-    chainName,
+    chainId,
     anchorAddress,
     publicInputs,
     extData,
   }: {
-    chainName: string;
+    chainId: number;
     anchorAddress: string;
     publicInputs: IFixedAnchorPublicInputs;
     extData: IFixedAnchorExtData;
@@ -342,7 +342,7 @@ async function txHashOrReject(
     const cmd = {
       evm: {
         anchor: {
-          chain: chainName,
+          chainId: chainId,
           id: anchorAddress,
           proof: publicInputs.proof,
           roots: publicInputs._roots,

@@ -35,7 +35,7 @@ use crate::utils::ClickableLink;
 #[derive(Clone)]
 pub struct TxQueue<S: QueueStore<TypedTransaction>> {
     ctx: RelayerContext,
-    chain_name: String,
+    typed_chain_id: String,
     store: Arc<S>,
 }
 
@@ -50,19 +50,19 @@ where
     /// # Arguments
     ///
     /// * `ctx` - RelayContext reference that holds the configuration
-    /// * `chain_name` - The name of the chain that this queue is for
+    /// * `typed_chain_id` - The TypedChainId that this TxQueue instance will handle
     /// * `store` - [Sled](https://sled.rs)-based database store
     ///
     /// # Examples
     ///
     /// ```
     /// use crate::tx_queue::TxQueue;
-    /// let tx_queue = TxQueue::new(ctx, chain_name.clone(), store);
+    /// let tx_queue = TxQueue::new(ctx, typed_chain_id.clone(), store);
     /// ```
-    pub fn new(ctx: RelayerContext, chain_name: String, store: Arc<S>) -> Self {
+    pub fn new(ctx: RelayerContext, typed_chain_id: String, store: Arc<S>) -> Self {
         Self {
             ctx,
-            chain_name,
+            typed_chain_id,
             store,
         }
     }
@@ -86,16 +86,16 @@ where
     ///     }
     /// };
     /// ```
-    #[tracing::instrument(skip_all, fields(chain = %self.chain_name))]
+    #[tracing::instrument(skip_all, fields(chain = %self.typed_chain_id))]
     pub async fn run(self) -> Result<(), anyhow::Error> {
-        let provider = self.ctx.evm_provider(&self.chain_name).await?;
-        let wallet = self.ctx.evm_wallet(&self.chain_name).await?;
+        let provider = self.ctx.evm_provider(&self.typed_chain_id).await?;
+        let wallet = self.ctx.evm_wallet(&self.typed_chain_id).await?;
         let client = Arc::new(SignerMiddleware::new(provider, wallet));
         let chain_config = self
             .ctx
             .config
             .evm
-            .get(&self.chain_name)
+            .get(&self.typed_chain_id)
             .context("Chain not configured")?;
         let chain_id = client.get_chainid().await?;
         let store = self.store;
@@ -108,7 +108,7 @@ where
             tracing::Level::DEBUG,
             kind = %crate::probe::Kind::TxQueue,
             ty = "EVM",
-            chain_id = %chain_id.as_u64(),
+            chain_id = %chain_id.as_u32(),
             starting = true,
         );
 
@@ -120,7 +120,7 @@ where
                 let maybe_explorer = &chain_config.explorer;
                 let mut tx_hash: H256;
                 if let Some(raw_tx) = maybe_tx {
-                    let my_tx_hash = raw_tx.sighash(chain_id.as_u64());
+                    let my_tx_hash = raw_tx.sighash(chain_id.as_u32());
                     tx_hash = my_tx_hash;
                     let pending_tx = client
                         .send_transaction(raw_tx.clone(), None)
@@ -133,7 +133,7 @@ where
                                 tracing::Level::DEBUG,
                                 kind = %crate::probe::Kind::TxQueue,
                                 ty = "EVM",
-                                chain_id = %chain_id.as_u64(),
+                                chain_id = %chain_id.as_u32(),
                                 pending = true,
                                 %tx_hash,
                             );
@@ -185,7 +185,7 @@ where
                                 tracing::Level::DEBUG,
                                 kind = %crate::probe::Kind::TxQueue,
                                 ty = "EVM",
-                                chain_id = %chain_id.as_u64(),
+                                chain_id = %chain_id.as_u32(),
                                 errored = true,
                                 %tx_hash,
                                 error = %e,
@@ -219,7 +219,7 @@ where
                                 tracing::Level::DEBUG,
                                 kind = %crate::probe::Kind::TxQueue,
                                 ty = "EVM",
-                                chain_id = %chain_id.as_u64(),
+                                chain_id = %chain_id.as_u32(),
                                 finalized = true,
                                 %tx_hash,
                             );
@@ -268,7 +268,7 @@ where
                                 tracing::Level::DEBUG,
                                 kind = %crate::probe::Kind::TxQueue,
                                 ty = "EVM",
-                                chain_id = %chain_id.as_u64(),
+                                chain_id = %chain_id.as_u32(),
                                 errored = true,
                                 %tx_hash,
                                 error = %e,

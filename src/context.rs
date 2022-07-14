@@ -65,23 +65,24 @@ impl RelayerContext {
     ///
     /// # Arguments
     ///
-    /// * `chain_name` - A string representing the chain name.
+    /// * `typed_chain_id` - A string of the TypedChainId value
+    ///                      as it is the index into the config
     ///
     /// # Examples
     ///
     /// ```
-    /// let chain_name = "mainnet".to_string();
-    /// let provider = ctx.evm_provider(chain_name).await?;
+    /// let typed_chain_id = "1099511632777".to_string();
+    /// let provider = ctx.evm_provider(typed_chain_id).await?;
     /// ```
     pub async fn evm_provider(
         &self,
-        chain_id: &str,
+        typed_chain_id: &str,
     ) -> anyhow::Result<Provider<Http>> {
         let chain_config = self
             .config
             .evm
-            .get(chain_id)
-            .context(format!("Chain {} not configured or enabled", chain_id))?;
+            .get(typed_chain_id)
+            .context(format!("Chain {} not configured or enabled", typed_chain_id))?;
         let provider = Provider::try_from(chain_config.http_endpoint.as_str())?
             .interval(Duration::from_millis(5u64));
         Ok(provider)
@@ -90,21 +91,22 @@ impl RelayerContext {
     ///
     /// # Arguments
     ///
-    /// * `chain_name` - A string representing the chain name.
+    /// * `typed_chain_id` - A string of the TypedChainId value
+    ///                      as it is the index into the config
     ///
     /// # Examples
     ///
     /// ```
-    /// let chain_name = "mainnet".to_string();
-    /// let wallet = self.ctx.evm_wallet(&self.chain_name).await?;
+    /// let typed_chain_id = "1099511632777".to_string();
+    /// let wallet = self.ctx.evm_wallet(&self.typed_chain_id).await?;
     /// ```
     pub async fn evm_wallet(
         &self,
-        chain_name: &str,
+        typed_chain_id: &str,
     ) -> anyhow::Result<LocalWallet> {
-        let chain_config = self.config.evm.get(chain_name).context(format!(
+        let chain_config = self.config.evm.get(typed_chain_id).context(format!(
             "Chain {} not configured or enabled",
-            chain_name
+            typed_chain_id
         ))?;
         let key = SecretKey::from_bytes(chain_config.private_key.as_bytes())?;
         let chain_id = chain_config.chain_id;
@@ -115,30 +117,31 @@ impl RelayerContext {
     ///
     /// # Arguments
     ///
-    /// * `chain_id` - A string representing the chain ID.
+    /// * `typed_chain_id` - A string of the TypedChainId value
+    ///                      as it is the index into the config
     ///
     /// # Examples
     ///
     /// ```
-    /// let chain_id = "4".to_string();
+    /// let chain_id = "2199023256633".to_string();
     /// let client = ctx.substrate_provider::<subxt::DefaultConfig>(chain_id).await?;
     /// ```
     pub async fn substrate_provider<C: subxt::Config>(
         &self,
-        chain_id: &str,
+        typed_chain_id: &str,
     ) -> anyhow::Result<subxt::Client<C>> {
         let node_config = self
             .config
             .substrate
-            .get(chain_id)
-            .context(format!("Node {} not configured or enabled", chain_id))?;
+            .get(typed_chain_id)
+            .context(format!("Node {} not configured or enabled", typed_chain_id))?;
         let client = subxt::ClientBuilder::new()
             .set_url(node_config.ws_endpoint.as_str())
             .build()
             .await
             .context(format!(
                 "connecting to {} using {}",
-                chain_id, node_config.ws_endpoint
+                typed_chain_id, node_config.ws_endpoint
             ))?;
         Ok(client)
     }
@@ -146,24 +149,25 @@ impl RelayerContext {
     ///
     /// # Arguments
     ///
-    /// * `chain_id` - A string representing the chain ID.
+    /// * `typed_chain_id` - A string of the TypedChainId value
+    ///                      as it is the index into the config
     ///
     /// # Examples
     ///
     /// ```
-    /// let chain_id = "4".to_string();
+    /// let chain_id = "2199023256633".to_string();
     /// let pair = ctx.substrate_wallet(chain_id).await?;
     /// ```
     pub async fn substrate_wallet(
         &self,
-        chain_id: &str,
+        typed_chain_id: &str,
     ) -> anyhow::Result<Sr25519Pair> {
         let node_config = self
             .config
             .substrate
-            .get(chain_id)
+            .get(typed_chain_id)
             .cloned()
-            .context(format!("Chain {} not configured or enabled", chain_id))?;
+            .context(format!("Chain {} not configured or enabled", typed_chain_id))?;
         Ok(node_config.suri.into())
     }
 }

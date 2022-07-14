@@ -62,7 +62,7 @@ pub async fn handle_substrate_vanchor_relay_tx<'a>(
             encrypted_output2: cmd.ext_data.encrypted_output2.to_vec(),
         };
 
-    let requested_chain = cmd.chain_id;
+    let requested_chain = cmd.typed_chain_id;
     let maybe_client = ctx
         .substrate_provider::<DefaultConfig>(&requested_chain.to_string())
         .await;
@@ -79,14 +79,14 @@ pub async fn handle_substrate_vanchor_relay_tx<'a>(
         subxt::SubstrateExtrinsicParams<DefaultConfig>,
     >>();
 
-    let pair = match ctx.substrate_wallet(&cmd.chain_id.to_string()).await {
+    let pair = match ctx.substrate_wallet(&cmd.typed_chain_id.to_string()).await {
         Ok(v) => v,
         Err(e) => {
             tracing::error!("Misconfigured Network: {}", e);
             let _ = stream
                 .send(Error(format!(
                     "Misconfigured Network: {:?}",
-                    cmd.chain_id
+                    cmd.typed_chain_id
                 )))
                 .await;
             return;

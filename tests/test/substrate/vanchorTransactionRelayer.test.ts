@@ -43,6 +43,8 @@ import {
   ArkworksProvingManager,
   Utxo,
   VAnchorProof,
+  calculateTypedChainId,
+  ChainType,
 } from '@webb-tools/sdk-core';
 
 describe('Substrate VAnchor Transaction Relayer Tests', function () {
@@ -239,10 +241,10 @@ describe('Substrate VAnchor Transaction Relayer Tests', function () {
 
     // chainId
     const chainIdentifier = 1080;
-    const chainIdHex = chainIdentifier.toString(16);
+    const typedChainId = calculateTypedChainId(ChainType.Substrate, chainIdentifier);
     // now we call relayer leaf API to check no of leaves stored in LeafStorageCache
     // are equal to no of deposits made.
-    const response = await webbRelayer.getLeavesSubstrate(chainIdHex, treeId.toString());
+    const response = await webbRelayer.getLeavesSubstrate(typedChainId, treeId.toString());
     expect(response.status).equal(200);
     let leavesStore = response.json() as Promise<LeavesCacheResponse>;
     leavesStore.then(resp => {

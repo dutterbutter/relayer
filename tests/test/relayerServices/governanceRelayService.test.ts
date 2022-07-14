@@ -197,7 +197,7 @@ describe('Governance Relaying Service', function () {
 
     // now we try to call relayer leaves API
     // It should fail since data querying is not configured for relayer
-    const chainId = localChain1.underlyingChainId.toString(16);
+    const chainId = localChain1.chainId;
     const response = await webbRelayer.getLeavesEvm(
       chainId,
       anchor1.contract.address
@@ -231,7 +231,7 @@ describe('Governance Relaying Service', function () {
     );
 
     const relayerInfo = await webbRelayer.info();
-    const localChain1Info = relayerInfo.evm[localChain1.underlyingChainId];
+    const localChain1Info = relayerInfo.evm[localChain1.chainId];
     const relayerFeePercentage =
       localChain1Info?.contracts.find(
         (c) => c.address === anchor1.contract.address

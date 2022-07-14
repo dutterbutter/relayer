@@ -2857,26 +2857,22 @@
     "@webb-tools/utils" "^0.2.1"
     snarkjs "0.4.22"
 
-"@webb-tools/api-derive@0.1.4-87":
-  version "0.1.4-87"
-  resolved "https://registry.yarnpkg.com/@webb-tools/api-derive/-/api-derive-0.1.4-87.tgz#3c960185a911f29f1fd95fc9652eb936baa38ccd"
-  integrity sha512-2787trd4/0VPe8m8QwgziSODu5FqBlMhfyQYBHJU6PlxtPYyfy5Ev32EP3Ya4c3Yj/nFCeu6EvpH7e+ytLRYKQ==
+"@webb-tools/api-derive@0.1.4-88", "@webb-tools/api-derive@file:../../../webb.js/packages/api-derive/build":
+  version "0.1.4-88"
   dependencies:
     "@babel/runtime" "^7.10.2"
     "@polkadot/api" "8.7.1"
     "@polkadot/rpc-core" "8.7.1"
-    "@webb-tools/api" "0.1.4-87"
-    "@webb-tools/types" "0.1.4-87"
+    "@webb-tools/api" "0.1.4-88"
+    "@webb-tools/types" "0.1.4-88"
 
-"@webb-tools/api@0.1.4-87":
-  version "0.1.4-87"
-  resolved "https://registry.yarnpkg.com/@webb-tools/api/-/api-0.1.4-87.tgz#946a5279ade3ee7df2e21fd2e76c54bc0b2325b3"
-  integrity sha512-MAQwHbV8disyxtkvaN4SNctAP8T9lqIqkK69wmvKckhuDIcGa6bP/qMA5spNLsFtpYW7aB5Rd75phan4Dg6/Bg==
+"@webb-tools/api@0.1.4-88", "@webb-tools/api@file:../../../webb.js/packages/api/build":
+  version "0.1.4-88"
   dependencies:
     "@babel/runtime" "^7.10.2"
     "@polkadot/api" "8.7.1"
     "@polkadot/rpc-core" "8.7.1"
-    "@webb-tools/api-derive" "0.1.4-87"
+    "@webb-tools/api-derive" "0.1.4-88"
 
 "@webb-tools/bridges@^0.2.2":
   version "0.2.2"
@@ -2925,15 +2921,13 @@
     "@webb-tools/utils" "^0.2.1"
     "@webb-tools/vbridge" "^0.2.2"
 
-"@webb-tools/sdk-core@0.1.4-87":
-  version "0.1.4-87"
-  resolved "https://registry.yarnpkg.com/@webb-tools/sdk-core/-/sdk-core-0.1.4-87.tgz#edcfcf0a178643d9ff02cd352a170cf21cde2a79"
-  integrity sha512-deHGAJYUiiYa3/a7aSZ6ouSIso9zrlMbRK3/jm3FALzmiDGyw6d+b7Pba3vTuqcnq5BjmpvCm5PluE6LJ1BmSA==
+"@webb-tools/sdk-core@0.1.4-87", "@webb-tools/sdk-core@file:../../../webb.js/packages/sdk-core/build":
+  version "0.1.4-88"
   dependencies:
     "@polkadot/util" "9.4.1"
     "@types/events" "^3.0.0"
-    "@webb-tools/api" "0.1.4-87"
-    "@webb-tools/wasm-utils" "0.1.4-87"
+    "@webb-tools/api" "0.1.4-88"
+    "@webb-tools/wasm-utils" "0.1.4-88"
     bignumber.js "^9.0.0"
     circomlibjs "0.0.8"
     elliptic "6.5.4"
@@ -2944,15 +2938,13 @@
     lodash "^4.17.20"
     snarkjs "0.4.22"
 
-"@webb-tools/test-utils@0.1.4-87":
-  version "0.1.4-87"
-  resolved "https://registry.yarnpkg.com/@webb-tools/test-utils/-/test-utils-0.1.4-87.tgz#2e0d66849a40b3f9545080103ca1dd4cc032d11f"
-  integrity sha512-T4x3ZNEThpGBxCj4+XdSPTpO9oXzbICbCbMdZLoUqG2drkXzgqb/mGAd0cGquww2WWJ0ZvogC8kplsaApFc/7Q==
+"@webb-tools/test-utils@file:../../../webb.js/packages/test-utils/build":
+  version "0.1.4-88"
   dependencies:
     "@babel/runtime" "^7.10.2"
     "@polkadot/api" "8.7.1"
     "@polkadot/keyring" "9.4.1"
-    "@webb-tools/api" "0.1.4-87"
+    "@webb-tools/api" "0.1.4-88"
     bignumber.js "^9.0.0"
     ethers "5.5.1"
     ganache "7.1.0"
@@ -2968,10 +2960,8 @@
     "@webb-tools/utils" "^0.2.1"
     ethers "5.5.1"
 
-"@webb-tools/types@0.1.4-87":
-  version "0.1.4-87"
-  resolved "https://registry.yarnpkg.com/@webb-tools/types/-/types-0.1.4-87.tgz#2ae5d9d836ef461c0e3d99a6ebaf4cae55405c85"
-  integrity sha512-777Cta1D0PKKfzDRiJivcs0/yGzJQHiSH1JO15mic8ZN3HE4C8ca6drO7xc0rhTEZ4JzgjQAbLmJLpz/7siEng==
+"@webb-tools/types@0.1.4-88", "@webb-tools/types@file:../../../webb.js/packages/types/build":
+  version "0.1.4-88"
   dependencies:
     "@babel/runtime" "^7.10.2"
     "@open-web3/orml-types" "^1.1.3"
@@ -3003,10 +2993,10 @@
     ffjavascript "0.2.55"
     snarkjs "0.4.22"
 
-"@webb-tools/wasm-utils@0.1.4-87":
-  version "0.1.4-87"
-  resolved "https://registry.yarnpkg.com/@webb-tools/wasm-utils/-/wasm-utils-0.1.4-87.tgz#15c670428ecc8cddfaef12fae7715fa589d7b6ff"
-  integrity sha512-etZsTjXG1Gr/7CyusRAAcaGZOjM9UBVblotq16ZfGo1dmBVaROK7Ne0GWmcVLqw4DBDHnYm4IHsAU0tkDuGeSw==
+"@webb-tools/wasm-utils@0.1.4-88":
+  version "0.1.4-88"
+  resolved "https://registry.yarnpkg.com/@webb-tools/wasm-utils/-/wasm-utils-0.1.4-88.tgz#bfd6c635af947e2ab6a9740da3fd29d63a048ffd"
+  integrity sha512-Ce6Q8tf0HJKvaU0nQx6x0YldD4+m/rFLAWKcQfwSgheOAqarmRgJSAbExz2oRhY1VsuOVa2bfi4+09i4cr7zAQ==
 
 JSONStream@^1.3.5:
   version "1.3.5"

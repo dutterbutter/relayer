@@ -82,12 +82,13 @@ pub async fn ignite(
     tracing::debug!("Relayer configuration  : {:?}", ctx.config);
 
     // now we go through each chain, in our configuration
-    for (chain_name, chain_config) in &ctx.config.evm {
+    for (typed_chain_id, chain_config) in &ctx.config.evm {
         if !chain_config.enabled {
             continue;
         }
+        let chain_name = &chain_config.name;
         let chain_id = U256::from(chain_config.chain_id);
-        let provider = ctx.evm_provider(chain_name).await?;
+        let provider = ctx.evm_provider(typed_chain_id).await?;
         let client = Arc::new(provider);
         tracing::debug!(
             "Starting Background Services for ({}) chain.",
@@ -1029,15 +1030,20 @@ async fn start_substrate_signature_bridge_events_watcher(
 /// # Arguments
 ///
 /// * `ctx` - RelayContext reference that holds the configuration
-/// * `chain_name` - Name of the chain
+/// * `typed_chain_id` - The TypedChainId that this TxQueue instance will handle
 /// * `store` -[Sled](https://sled.rs)-based database store
 fn start_tx_queue(
     ctx: RelayerContext,
-    chain_name: String,
+    typed_chain_id: String,
     store: Arc<Store>,
 ) -> anyhow::Result<()> {
     let mut shutdown_signal = ctx.shutdown_signal();
-    let tx_queue = TxQueue::new(ctx, chain_name.clone(), store);
+    let chain = ctx.clone().config.evm.get(&typed_chain_id);
+    let tx_queue = TxQueue::new(ctx, typed_chain_id.clone(), store);
+    let chain_name = match chain {
+        Some(config) => &config.name,
+        None => &typed_chain_id 
+    };
 
     tracing::debug!("Transaction Queue for ({}) Started.", chain_name);
     let task = async move {

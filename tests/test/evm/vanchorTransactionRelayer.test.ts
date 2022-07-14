@@ -217,7 +217,7 @@ describe('Vanchor Transaction relayer', function () {
 
     // now we call relayer leaf API to check no of leaves stored in LeafStorageCache
     // are equal to no of deposits made. Each VAnchor deposit generates 2 leaf entries
-    const chainId = localChain1.underlyingChainId.toString(16);
+    const chainId = localChain1.chainId;
     const response = await webbRelayer.getLeavesEvm(
       chainId,
       vanchor1.contract.address

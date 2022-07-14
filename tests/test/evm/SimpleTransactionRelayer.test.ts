@@ -182,7 +182,7 @@ describe('Simple Transaction Relayer With No Proposal Signing Banckend', functio
     );
 
     const relayerInfo = await webbRelayer.info();
-    const localChain1Info = relayerInfo.evm[localChain1.underlyingChainId];
+    const localChain1Info = relayerInfo.evm[localChain1.chainId];
     const relayerFeePercentage =
       localChain1Info?.contracts.find(
         (c) => c.address === anchor1.contract.address
@@ -207,7 +207,7 @@ describe('Simple Transaction Relayer With No Proposal Signing Banckend', functio
     await webbRelayer.ping();
     // now send the withdrawal request.
     const txHash = await webbRelayer.anchorWithdraw(
-      localChain1.underlyingChainId.toString(),
+      localChain1.chainId,
       anchor1.getAddress(),
       publicInputs,
       extData

@@ -96,7 +96,7 @@ pub struct ExtData<E, I, B, A> {
 #[serde(rename_all = "camelCase")]
 pub struct VAnchorRelayTransaction<Id, P, R, E, I, B, A> {
     /// one of the supported chains of this relayer
-    pub chain_id: u64,
+    pub typed_chain_id: u64,
     /// The tree id of the mixer's underlying tree
     pub id: Id,
     /// The zero-knowledge proof data structure for VAnchor transactions
