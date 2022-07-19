@@ -38,13 +38,11 @@ use webb::substrate::subxt::sp_runtime::AccountId32;
 
 use crate::context::RelayerContext;
 use crate::store::LeafCacheStore;
-use crate::tx_relay::evm::anchor::handle_anchor_relay_tx;
 use crate::tx_relay::evm::vanchor::handle_vanchor_relay_tx;
-use crate::tx_relay::substrate::anchor::handle_substrate_anchor_relay_tx;
 use crate::tx_relay::substrate::mixer::handle_substrate_mixer_relay_tx;
 use crate::tx_relay::substrate::vanchor::handle_substrate_vanchor_relay_tx;
 use crate::tx_relay::{
-    AnchorRelayTransaction, MixerRelayTransaction, VAnchorRelayTransaction,
+    MixerRelayTransaction, VAnchorRelayTransaction,
 };
 use webb::substrate::subxt::sp_core::Pair;
 
@@ -318,9 +316,6 @@ pub async fn handle_leaves_cache_evm(
         .iter()
         .cloned()
         .filter_map(|c| match c {
-            crate::config::Contract::Anchor(c) => {
-                Some((c.common.address, c.events_watcher))
-            }
             crate::config::Contract::VAnchor(c) => {
                 Some((c.common.address, c.events_watcher))
             }
@@ -448,7 +443,6 @@ pub enum Command {
 #[serde(rename_all = "camelCase")]
 pub enum CommandType<Id, P, R, E, I, B, A> {
     Mixer(MixerRelayTransaction<Id, P, E, I, B>),
-    Anchor(AnchorRelayTransaction<Id, P, R, E, I, B>),
     VAnchor(VAnchorRelayTransaction<Id, P, R, E, I, B, A>),
 }
 
@@ -539,9 +533,6 @@ pub async fn handle_evm(
     stream: CommandStream,
 ) {
     match cmd {
-        CommandType::Anchor(_) => {
-            handle_anchor_relay_tx(ctx, cmd, stream).await
-        }
         CommandType::VAnchor(_) => {
             handle_vanchor_relay_tx(ctx, cmd, stream).await
         }
@@ -597,9 +588,6 @@ pub async fn handle_substrate<'a>(
     match cmd {
         CommandType::Mixer(_) => {
             handle_substrate_mixer_relay_tx(ctx, cmd, stream).await;
-        }
-        CommandType::Anchor(_) => {
-            handle_substrate_anchor_relay_tx(ctx, cmd, stream).await;
         }
         CommandType::VAnchor(_) => {
             handle_substrate_vanchor_relay_tx(ctx, cmd, stream).await;
