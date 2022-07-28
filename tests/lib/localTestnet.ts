@@ -298,7 +298,7 @@ export class LocalChain {
       ethers.utils.parseEther('1')
     );
     const side = bridge.getBridgeSide(this.chainId);
-    const wallet = side.governor;
+    const wallet = side.governor as ethers.Wallet;
     const otherChainIds = Array.from(bridge.bridgeSides.keys()).filter(
       (chainId) => chainId !== this.chainId
     );
@@ -354,7 +354,7 @@ export class LocalChain {
     }
     const localAnchor = bridge.getVAnchor(this.chainId);
     const side = bridge.getVBridgeSide(this.chainId);
-    const wallet = side.governor;
+    const wallet = side.governor as ethers.Wallet;
     const otherChainIds = Array.from(bridge.vBridgeSides.keys()).filter(
       (chainId) => chainId !== this.chainId
     );
