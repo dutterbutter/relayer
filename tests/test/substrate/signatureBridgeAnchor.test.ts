@@ -121,8 +121,8 @@ describe('Substrate Signature Bridge Relaying On Anchor Deposit <> Mocked Backen
     });
 
     //force set maintainer
-    let setMaintainerCall = api.tx.signatureBridge!.forceSetMaintainer!(
-      Array.from(hexToU8a(uncompressedKey))
+    let setMaintainerCall = api.tx.signatureBridge.forceSetMaintainer(
+      hexToU8a(uncompressedKey)
     );
     await aliceNode.sudoExecuteTransaction(setMaintainerCall);
 
@@ -155,7 +155,7 @@ describe('Substrate Signature Bridge Relaying On Anchor Deposit <> Mocked Backen
       api,
       PK1,
       treeId,
-      chainId,
+      chainId
     );
     const txSigned = await setResourceIdProposalCall.signAsync(account);
     await aliceNode.executeTransaction(txSigned);
@@ -192,11 +192,16 @@ async function createAnchor(
   api: ApiPromise,
   aliceNode: LocalProtocolSubstrate
 ): Promise<number> {
-  let createAnchorCall = api.tx.anchorBn254.create(10000000000000, 100, 32, 0);
+  let createAnchorCall = api.tx.anchorBn254!.create!(
+    10000000000000,
+    100,
+    32,
+    0
+  );
   // execute sudo transaction.
   await aliceNode.sudoExecuteTransaction(createAnchorCall);
   // get latest treeId created for anchor
-  const treeIds = await api.query.anchorBn254.anchors.keys();
+  const treeIds = await api.query.anchorBn254!.anchors!.keys();
   const sorted = treeIds
     .map((id) => Number(id.toHuman()))
     .sort()
@@ -284,7 +289,7 @@ async function createAnchorDepositTx(
   };
   const note = await Note.generateNote(noteInput);
   const leaf = note.getLeaf();
-  const tx = api.tx.anchorBn254.deposit(treeId, leaf);
+  const tx = api.tx.anchorBn254!.deposit!(treeId, leaf);
   return { tx, note };
 }
 

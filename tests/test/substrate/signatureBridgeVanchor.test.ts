@@ -129,8 +129,8 @@ describe('Substrate Signature Bridge Relaying On Vanchor Deposit <<>> Mocked Bac
     });
 
     //force set maintainer
-    let setMaintainerCall = api.tx.signatureBridge!.forceSetMaintainer!(
-      Array.from(hexToU8a(uncompressedKey))
+    let setMaintainerCall = api.tx.signatureBridge.forceSetMaintainer(
+      hexToU8a(uncompressedKey)
     );
     await aliceNode.sudoExecuteTransaction(setMaintainerCall);
 

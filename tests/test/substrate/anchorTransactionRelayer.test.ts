@@ -124,7 +124,7 @@ describe('Substrate Anchor Transaction Relayer', function () {
     // chainId
     let chainId = await aliceNode.getChainId();
     const chainIdHex = chainId.toString(16);
-    const treeIds = await api.query.anchorBn254.anchors.keys();
+    const treeIds = await api.query.anchorBn254!.anchors!.keys();
     const sorted = treeIds.map((id) => Number(id.toHuman())).sort();
     const treeId = sorted[0] || 5;
 
@@ -576,7 +576,7 @@ async function createAnchorDepositTx(api: ApiPromise): Promise<{
   tx: SubmittableExtrinsic<'promise'>;
   note: Note;
 }> {
-  const treeIds = await api.query.anchorBn254.anchors.keys();
+  const treeIds = await api.query.anchorBn254!.anchors!.keys();
   const sorted = treeIds.map((id) => Number(id.toHuman())).sort();
   const treeId = sorted[0] || 5;
 
@@ -598,7 +598,7 @@ async function createAnchorDepositTx(api: ApiPromise): Promise<{
   };
   const note = await Note.generateNote(noteInput);
   const leaf = note.getLeaf();
-  const tx = api.tx.anchorBn254.deposit(treeId, leaf);
+  const tx = api.tx.anchorBn254!.deposit!(treeId, leaf);
   return { tx, note };
 }
 
@@ -636,7 +636,7 @@ async function createAnchorWithdrawProof(
       '0x',
       ''
     );
-    const treeIds = await api.query.anchorBn254.anchors.keys();
+    const treeIds = await api.query.anchorBn254!.anchors!.keys();
     const sorted = treeIds.map((id) => Number(id.toHuman())).sort();
     const treeId = sorted[0] || 5;
     const leafCount: number =
