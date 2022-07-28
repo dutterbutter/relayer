@@ -362,7 +362,7 @@ export class LocalChain {
       bridge.getVAnchor(chainId)
     );
     let contracts: Contract[] = [
-      // first the local Anchor
+      // first the local VAnchor
       {
         contract: 'VAnchor',
         address: localAnchor.getAddress(),
@@ -373,7 +373,7 @@ export class LocalChain {
         eventsWatcher: {
           enabled: true,
           pollingInterval: 1000,
-          printProgressInterval: 60_000,
+          printProgressInterval: 10_000,
         },
         linkedAnchors: await Promise.all(
           otherAnchors.map(async (anchor) => ({
@@ -389,7 +389,7 @@ export class LocalChain {
         eventsWatcher: {
           enabled: true,
           pollingInterval: 1000,
-          printProgressInterval: 60_000,
+          printProgressInterval: 10_000,
         },
       },
     ];

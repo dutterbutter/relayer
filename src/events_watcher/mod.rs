@@ -254,6 +254,7 @@ pub trait EventWatcher {
             }
         };
         backoff::future::retry(backoff, task).await?;
+        tracing::warn!("Event watcher stopped!!");
         Ok(())
     }
 }

@@ -148,8 +148,11 @@ pub async fn ignite(
                     .substrate_provider::<subxt::DefaultConfig>(node_name)
                     .await?;
                 let api = client.clone().to_runtime_api::<DkgRuntime>();
-                let chain_id =
-                    api.constants().dkg_proposals().chain_identifier()?;
+                let chain_id = api
+                    .constants()
+                    .dkg_proposals()
+                    .chain_identifier()
+                    .unwrap_or(TypedChainId::Substrate(node_config.chain_id));
                 let chain_id = match chain_id {
                     TypedChainId::None => 0,
                     TypedChainId::Evm(id)
@@ -704,7 +707,12 @@ async fn start_evm_vanchor_events_watcher(
             my_config.linked_anchors,
             my_config.proposal_signing_backend,
         )
-        .await?;
+        .await;
+        tracing::debug!(
+            ?proposal_signing_backend,
+            "proposal signing backend value"
+        );
+        let proposal_signing_backend = proposal_signing_backend?;
         match proposal_signing_backend {
             ProposalSigningBackendSelector::Dkg(backend) => {
                 let deposit_handler = VAnchorDepositHandler::new(backend);
@@ -714,6 +722,10 @@ async fn start_evm_vanchor_events_watcher(
                     store,
                     wrapper,
                     vec![Box::new(deposit_handler), Box::new(leaves_handler)],
+                );
+                tracing::debug!(
+                    "VAnchor Events Watcher for ({}) Started with DKG Signing Backend.",
+                    contract_address,
                 );
                 tokio::select! {
                     _ = vanchor_watcher_task => {
@@ -738,6 +750,10 @@ async fn start_evm_vanchor_events_watcher(
                     store,
                     wrapper,
                     vec![Box::new(deposit_handler), Box::new(leaves_handler)],
+                );
+                tracing::debug!(
+                    "VAnchor Events Watcher for ({}) Started with Mocked Signing Backend.",
+                    contract_address,
                 );
                 tokio::select! {
                     _ = vanchor_watcher_task => {
@@ -1088,6 +1104,16 @@ enum ProposalSigningBackendSelector {
     None,
     Mocked(MockedProposalSigningBackend<SledStore>),
     Dkg(DkgProposalSigningBackend<DkgRuntime, DefaultConfig>),
+}
+
+impl std::fmt::Debug for ProposalSigningBackendSelector {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "None"),
+            Self::Mocked(_) => f.debug_tuple("Mocked").finish(),
+            Self::Dkg(_) => f.debug_tuple("Dkg").finish(),
+        }
+    }
 }
 
 async fn make_proposal_signing_backend(

@@ -50,10 +50,11 @@ import { CircomUtxo } from '@webb-tools/sdk-core';
  * */
 
 // Global Variables shared across the script
+const SIMULATION_DURATION = 10 * 60 * 1000; // 10 minutes
 const PK1 = u8aToHex(ethers.utils.randomBytes(32));
 const PK2 = u8aToHex(ethers.utils.randomBytes(32));
 const PK3 = u8aToHex(ethers.utils.randomBytes(32));
-const tmpDirPath = temp.mkdirSync();
+const tmpDirPath = temp.mkdirSync('webb');
 
 // local evm network
 let hermesChain: LocalChain;
@@ -69,12 +70,16 @@ let charlieNode: LocalDkg;
 let webbRelayer: WebbRelayer;
 
 async function main(): Promise<void> {
+  console.log('Starting the DKG System');
   // Start the dkg system
   await startDkgSystem();
+  console.log('Starting the Local EVM Network');
   // Start the local EVM network
   await startLocalEvmNetwork();
+  console.log('Deploying VAnchor and Signature Bridge Contracts');
   // Deploy the VAnchor and Signautre Bridge contracts on the local EVM chains.
   await deployWebbContracts();
+  console.log('Starting the Webb Relayer');
   // Setup the Configurations for the Relayer.
   await saveRelayerConfig();
   // Start the Relayer.
@@ -85,8 +90,10 @@ async function main(): Promise<void> {
     totalTransactionsSuccess: 0,
     totalTransactionsFailure: 0,
     startedAt: new Date(),
-    meanTransactionTime: 0,
+    lastTransactionDuration: 0,
   };
+  console.log('Starting the Simulation');
+  console.table(simulationStats);
   // get a random local EVM chain
   const chains = [hermesChain, athenaChain, demeterChain];
   const leavesCache: Record<number, Uint8Array[]> = {
@@ -124,9 +131,7 @@ async function main(): Promise<void> {
       amount: '0',
     });
 
-    // Root on deposit anchor before insertions.
-    const beforeRoot = await targetVAnchor.contract.getLastRoot();
-    await targetVAnchor.transactWrap(
+    const tx = await targetVAnchor.transactWrap(
       '0x0000000000000000000000000000000000000000',
       [],
       [outputUtxo, dummyOutput1],
@@ -136,14 +141,16 @@ async function main(): Promise<void> {
       leavesMapBeforeDeposit
     );
     simulationStats.totalTransactions++;
+    console.log(`Sent transaction ${tx.transactionHash}`);
     // Store the leaves.
     leavesCache[srcChain.chainId]!.push(
       outputUtxo.commitment,
       dummyOutput1.commitment
     );
-    const latestDepositRoot = await targetVAnchor.contract.getLastRoot();
 
-    const pendingTx = await webbRelayer.waitForEvent({
+    const latestDepositRoot = await targetVAnchor.contract.getLastRoot();
+    const timer = performance.now();
+    await webbRelayer.waitForEvent({
       kind: 'tx_queue',
       event: {
         ty: 'EVM',
@@ -159,9 +166,41 @@ async function main(): Promise<void> {
         ty: 'EVM',
         chain_id: dstChain.underlyingChainId.toString(),
         finalized: true,
-        tx_hash: pendingTx.tx_hash,
       },
     });
+    const txTime = performance.now() - timer;
+    // now query the dstChain's VAnchor to see if the Merkle Root has been updated.
+    const dstVAnchor = vbridge.getVAnchor(dstChain.chainId);
+    const edgeIndex = await dstVAnchor.contract.edgeIndex(srcChain.chainId);
+    const edgeList = await dstVAnchor.contract.edgeList(edgeIndex);
+    // then we do check if the Merkle Root has been updated.
+    // if it has, then we continue to the next iteration.
+    const valueUtxoIndex = leavesCache[srcChain.chainId]?.length ?? 0;
+    if (valueUtxoIndex != 0 && edgeList.root != latestDepositRoot) {
+      simulationStats.totalTransactionsFailure++;
+      console.error(
+        `failed to relay the transaction #${simulationStats.totalTransactions}
+        total failure: ${simulationStats.totalTransactionsFailure}`
+      );
+      console.table(simulationStats);
+      continue;
+    } else {
+      simulationStats.totalTransactionsSuccess++;
+      simulationStats.lastTransactionDuration = txTime;
+      console.log(
+        `successfully relayed the transaction #${simulationStats.totalTransactions}
+        total success: ${simulationStats.totalTransactionsSuccess}`
+      );
+      console.table(simulationStats);
+    }
+
+    // check if the simulation is done.
+    if (
+      simulationStats.startedAt.getTime() + SIMULATION_DURATION <
+      Date.now()
+    ) {
+      break;
+    }
   }
   // finally
   await teardown();
@@ -216,7 +255,7 @@ async function startLocalEvmNetwork(): Promise<void> {
   const randomPort = () => getPort({ port: portNumbers(3333, 4444) });
   const enabledContracts: EnabledContracts[] = [
     {
-      contract: 'Anchor',
+      contract: 'VAnchor',
     },
   ];
   const populatedAccounts = [
@@ -380,6 +419,7 @@ async function saveRelayerConfig(): Promise<void> {
     signatureVBridge: vbridge,
     proposalSigningBackend: { type: 'DKGNode', node: charlieNode.name },
   });
+  console.log(`Config files saved to ${tmpDirPath}`);
 }
 
 async function startRelayer(): Promise<void> {
@@ -390,7 +430,7 @@ async function startRelayer(): Promise<void> {
     tmp: true,
     configDir: tmpDirPath,
     showLogs: true,
-    verbosity: 3,
+    verbosity: 4,
   });
 
   await webbRelayer.waitUntilReady();

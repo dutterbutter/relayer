@@ -123,8 +123,8 @@ export class LocalDkg extends SubstrateNodeBase<TypedEvent> {
   public async getChainId(): Promise<number> {
     const api = await super.api();
     //@ts-ignore
-    let chainId = (await api.consts.dkgProposals.chainIdentifier).toNumber();
-    return chainId;
+    let chainId = (await api.consts.dkgProposals.chainIdentifier).toJSON();
+    return chainId!['substrate'] as number;
   }
 
   public async exportConfig(
