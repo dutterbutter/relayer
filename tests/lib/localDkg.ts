@@ -18,9 +18,11 @@
 /// This Could be through a Docker Container or a Local Compiled node.
 
 import '@webb-tools/types';
-import { spawn } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import { ECPairAPI, TinySecp256k1Interface, ECPairFactory } from 'ecpair';
 import isCI from 'is-ci';
+import path from 'path';
+import fs from 'fs';
 import * as TinySecp256k1 from 'tiny-secp256k1';
 import {
   FullNodeInfo,
@@ -78,8 +80,14 @@ export class LocalDkg extends SubstrateNodeBase<TypedEvent> {
       }
       return new LocalDkg(opts, proc);
     } else {
+      const gitRoot = execSync('git rev-parse --show-toplevel').toString().trim();
+      const basePath = path.join(gitRoot, 'tests', 'node_modules', 'db', opts.authority);
+      // check if basePath exists, if so, delete it.
+      if (fs.existsSync(basePath)) {
+        fs.rmSync(basePath, { recursive: true, force: true });
+      }
       startArgs.push(
-        '--tmp',
+        `--base-path=${basePath}`,
         '--rpc-cors',
         'all',
         '--rpc-methods=unsafe',
@@ -122,8 +130,7 @@ export class LocalDkg extends SubstrateNodeBase<TypedEvent> {
   // get chainId
   public async getChainId(): Promise<number> {
     const api = await super.api();
-    //@ts-ignore
-    let chainId = (await api.consts.dkgProposals.chainIdentifier).toJSON();
+    let chainId = api.consts.dkgProposals.chainIdentifier.toJSON();
     return chainId!['substrate'] as number;
   }
 

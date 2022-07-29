@@ -24,6 +24,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use anyhow::Context;
 use ethereum_types::U256;
 use webb::evm::ethers::providers;
 use webb::substrate::dkg_runtime::api::runtime_types::webb_proposals::header::TypedChainId;
@@ -152,7 +153,7 @@ pub async fn ignite(
                     .constants()
                     .dkg_proposals()
                     .chain_identifier()
-                    .unwrap_or(TypedChainId::Substrate(node_config.chain_id));
+                    .context("Failed to get chain identifier")?;
                 let chain_id = match chain_id {
                     TypedChainId::None => 0,
                     TypedChainId::Evm(id)
@@ -707,12 +708,7 @@ async fn start_evm_vanchor_events_watcher(
             my_config.linked_anchors,
             my_config.proposal_signing_backend,
         )
-        .await;
-        tracing::debug!(
-            ?proposal_signing_backend,
-            "proposal signing backend value"
-        );
-        let proposal_signing_backend = proposal_signing_backend?;
+        .await?;
         match proposal_signing_backend {
             ProposalSigningBackendSelector::Dkg(backend) => {
                 let deposit_handler = VAnchorDepositHandler::new(backend);
@@ -798,7 +794,15 @@ async fn start_evm_vanchor_events_watcher(
         Result::<_, anyhow::Error>::Ok(())
     };
     // kick off the watcher.
-    tokio::task::spawn(task);
+    tokio::task::spawn(async move {
+        if let Err(e) = task.await {
+            tracing::error!(
+                "VAnchor events watcher for ({}) failed: {}",
+                contract_address,
+                e
+            );
+        }
+    });
     Ok(())
 }
 

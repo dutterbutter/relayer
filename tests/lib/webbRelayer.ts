@@ -81,7 +81,7 @@ export class WebbRelayer {
           this.#eventEmitter.emit(rawEvent.kind, rawEvent);
         }
       });
-
+    this.#process.stderr?.pipe(process.stderr);
     this.#process.on('close', (code) => {
       if (this.opts.showLogs) {
         process.stdout.write(

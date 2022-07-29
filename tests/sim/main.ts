@@ -409,15 +409,15 @@ async function saveRelayerConfig(): Promise<void> {
   });
   await hermesChain.writeConfig(`${tmpDirPath}/${hermesChain.name}.json`, {
     signatureVBridge: vbridge,
-    proposalSigningBackend: { type: 'DKGNode', node: charlieNode.name },
+    proposalSigningBackend: { type: 'DKGNode', node: chainId.toString() },
   });
   await athenaChain.writeConfig(`${tmpDirPath}/${athenaChain.name}.json`, {
     signatureVBridge: vbridge,
-    proposalSigningBackend: { type: 'DKGNode', node: charlieNode.name },
+    proposalSigningBackend: { type: 'DKGNode', node: chainId.toString() },
   });
   await demeterChain.writeConfig(`${tmpDirPath}/${demeterChain.name}.json`, {
     signatureVBridge: vbridge,
-    proposalSigningBackend: { type: 'DKGNode', node: charlieNode.name },
+    proposalSigningBackend: { type: 'DKGNode', node: chainId.toString() },
   });
   console.log(`Config files saved to ${tmpDirPath}`);
 }
@@ -430,7 +430,7 @@ async function startRelayer(): Promise<void> {
     tmp: true,
     configDir: tmpDirPath,
     showLogs: true,
-    verbosity: 4,
+    verbosity: 3,
   });
 
   await webbRelayer.waitUntilReady();

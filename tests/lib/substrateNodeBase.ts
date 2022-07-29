@@ -76,6 +76,7 @@ export type ExportedConfigOptions = {
 export const defaultEventsWatcherValue: EventsWatcher = {
   enabled: true,
   pollingInterval: 3000,
+  printProgressInterval: 60_000,
 };
 
 export abstract class SubstrateNodeBase<TypedEvent extends SubstrateEvent> {
