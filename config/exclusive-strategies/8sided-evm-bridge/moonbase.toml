@@ -5,7 +5,7 @@ http-endpoint = "$MOONBASE_HTTPS_URL"
 # Websocket Endpoint for long living connections
 ws-endpoint = "$MOONBASE_WSS_URL"
 # Block Explorer
-# Optinal, and used for generating clickable links
+# Optional, and used for generating clickable links
 # for transactions that happen on this chain.
 explorer = "https://moonbase.moonscan.io/"
 # chain specific id from evm opcode
