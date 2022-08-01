@@ -40,7 +40,6 @@ use crate::context::RelayerContext;
 use crate::store::LeafCacheStore;
 use crate::tx_relay::evm::anchor::handle_anchor_relay_tx;
 use crate::tx_relay::evm::vanchor::handle_vanchor_relay_tx;
-use crate::tx_relay::substrate::anchor::handle_substrate_anchor_relay_tx;
 use crate::tx_relay::substrate::mixer::handle_substrate_mixer_relay_tx;
 use crate::tx_relay::substrate::vanchor::handle_substrate_vanchor_relay_tx;
 use crate::tx_relay::{
@@ -599,7 +598,8 @@ pub async fn handle_substrate<'a>(
             handle_substrate_mixer_relay_tx(ctx, cmd, stream).await;
         }
         CommandType::Anchor(_) => {
-            handle_substrate_anchor_relay_tx(ctx, cmd, stream).await;
+            let _ =
+                stream.send(CommandResponse::Unimplemented("Removed")).await;
         }
         CommandType::VAnchor(_) => {
             handle_substrate_vanchor_relay_tx(ctx, cmd, stream).await;

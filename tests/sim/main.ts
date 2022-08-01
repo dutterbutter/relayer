@@ -29,9 +29,11 @@ import {
   defaultEventsWatcherValue,
   UsageMode,
 } from '../lib/substrateNodeBase.js';
+import { ethAddressFromUncompressedPublicKey } from '../lib/ethHelperFunctions.js';
 import path from 'path';
 import getPort, { portNumbers } from 'get-port';
-import { CircomUtxo } from '@webb-tools/sdk-core';
+import { CircomUtxo, parseTypedChainId } from '@webb-tools/sdk-core';
+import assert from 'assert';
 /**
  * The main entry file for the Webb Relayer Simulation:
  *
@@ -82,6 +84,7 @@ async function main(): Promise<void> {
   console.log('Starting the Webb Relayer');
   // Setup the Configurations for the Relayer.
   await saveRelayerConfig();
+  await prepareChains();
   // Start the Relayer.
   await startRelayer();
   // Start the Simulation:
@@ -317,7 +320,24 @@ async function deployWebbContracts(): Promise<void> {
     [demeterChain.chainId]: ['0'],
   };
 
-  vbridge = await deploySignatureVBridge(tokens, deployers);
+
+  // fetch the dkg public key.
+  const dkgPublicKey = await charlieNode.fetchDkgPublicKey();
+  assert(dkgPublicKey !== null, 'dkg public key is null');
+  const governorAddress = ethAddressFromUncompressedPublicKey(dkgPublicKey!);
+  // verify the governor address is a valid ethereum address.
+  assert(
+    ethers.utils.isAddress(governorAddress),
+    'governor address is invalid'
+  );
+
+  const governorConfig: Record<number, string> = {
+    [hermesChain.chainId]: governorAddress,
+    [athenaChain.chainId]: governorAddress,
+    [demeterChain.chainId]: governorAddress,
+  };
+
+  vbridge = await deploySignatureVBridge(tokens, deployers, governorConfig);
 }
 
 async function fetchComponentsFromFilePaths(
@@ -345,12 +365,12 @@ async function fetchComponentsFromFilePaths(
 
 async function deploySignatureVBridge(
   tokens: Record<number, string[]>,
-  deployers: DeployerConfig
+  deployers: DeployerConfig,
+  governorConfig: Record<number, string>,
 ): Promise<VBridge> {
   let assetRecord: Record<number, string[]> = {};
   let chainIdsArray: number[] = [];
   let existingWebbTokens = new Map<number, GovernedTokenWrapper>();
-  let governorConfig: Record<number, ethers.Wallet> = {};
 
   for (const chainIdType of Object.keys(deployers)) {
     assetRecord[chainIdType] = tokens[chainIdType];
@@ -393,7 +413,7 @@ async function deploySignatureVBridge(
   return VBridge.deployVariableAnchorBridge(
     bridgeInput,
     deployers,
-    governorConfig,
+    governorConfig as any,
     zkComponentsSmall,
     zkComponentsLarge
   );
@@ -420,6 +440,27 @@ async function saveRelayerConfig(): Promise<void> {
     proposalSigningBackend: { type: 'DKGNode', node: chainId.toString() },
   });
   console.log(`Config files saved to ${tmpDirPath}`);
+}
+
+async function prepareChains(): Promise<void> {
+  const api = await charlieNode.api();
+  const chainIds = Array.from(vbridge.vBridgeSides.keys())
+    .map((v) => parseTypedChainId(v))
+    .map((v) => v.chainId);
+  const rids = await Promise.all(
+    Array.from(vbridge.vAnchors.values()).map((v) => v.createResourceId())
+  );
+  const setResourceCall = (resourceId: string) =>
+    api.tx.dkgProposals.setResource(resourceId, '0x00');
+  const whitlelistChainIdCall = (chainId: number) =>
+    api.tx.dkgProposals.whitelistChain({ Evm: chainId });
+  for (const rid of rids) {
+    await charlieNode.sudoExecuteTransaction(setResourceCall(rid));
+  }
+
+  for (const chainId of chainIds) {
+    await charlieNode.sudoExecuteTransaction(whitlelistChainIdCall(chainId));
+  }
 }
 
 async function startRelayer(): Promise<void> {

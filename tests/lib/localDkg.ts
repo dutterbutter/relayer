@@ -80,8 +80,16 @@ export class LocalDkg extends SubstrateNodeBase<TypedEvent> {
       }
       return new LocalDkg(opts, proc);
     } else {
-      const gitRoot = execSync('git rev-parse --show-toplevel').toString().trim();
-      const basePath = path.join(gitRoot, 'tests', 'node_modules', 'db', opts.authority);
+      const gitRoot = execSync('git rev-parse --show-toplevel')
+        .toString()
+        .trim();
+      const basePath = path.join(
+        gitRoot,
+        'tests',
+        'node_modules',
+        'db',
+        opts.authority
+      );
       // check if basePath exists, if so, delete it.
       if (fs.existsSync(basePath)) {
         fs.rmSync(basePath, { recursive: true, force: true });

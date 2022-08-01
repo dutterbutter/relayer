@@ -9,7 +9,7 @@ use webb::substrate::subxt::{
 
 use crate::handler::{CommandResponse, CommandStream, WithdrawStatus};
 
-pub mod anchor;
+// pub mod anchor;
 pub mod mixer;
 pub mod vanchor;
 

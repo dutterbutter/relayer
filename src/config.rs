@@ -327,7 +327,6 @@ pub enum Pallet {
     Dkg(DKGPalletConfig),
     DKGProposals(DKGProposalsPalletConfig),
     DKGProposalHandler(DKGProposalHandlerPalletConfig),
-    AnchorBn254(AnchorBn254PalletConfig),
     SignatureBridge(SignatureBridgePalletConfig),
     VAnchorBn254(VAnchorBn254PalletConfig),
 }
@@ -438,21 +437,6 @@ pub struct DKGProposalHandlerPalletConfig {
     /// Controls the events watcher
     #[serde(rename(serialize = "eventsWatcher"))]
     pub events_watcher: EventsWatcherConfig,
-}
-
-/// AnchorBn254PalletConfig represents the configuration for the AnchorBn254 pallet.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct AnchorBn254PalletConfig {
-    /// Controls the events watcher
-    #[serde(rename(serialize = "eventsWatcher"))]
-    pub events_watcher: EventsWatcherConfig,
-    /// The type of the optional signing backend used for signing proposals. It can be None for pure Tx relayers
-    #[serde(rename(serialize = "proposalSigningBackend"))]
-    pub proposal_signing_backend: Option<ProposalSigningBackendConfig>,
-    ///A List of linked Anchor on this chain.
-    #[serde(rename(serialize = "linkedAnchors"), default)]
-    pub linked_anchors: Option<Vec<SubstrateLinkedAnchorConfig>>,
 }
 
 /// SignatureBridgePalletConfig represents the configuration for the SignatureBridge pallet.
