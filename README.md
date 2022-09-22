@@ -196,7 +196,7 @@ This will mount a configuration files at the `/config` directory inside the cont
 
 <h2 id="api"> API  📡</h2>
 
-The relayer has 3 endpoints available to query from. They are outlined below for your convenience.
+The relayer has 4 endpoints available to query from. They are outlined below for your convenience.
 
 **Retrieving nodes IP address:**
 
@@ -278,6 +278,30 @@ The relayer has 3 endpoints available to query from. They are outlined below for
   ```json
    {
     "leaves": ["0x2e5c62af48845c095bfa9b90b8ec9f6b7bd98fb3ac2dd3039050a64b919951dd", "0x0f89f0ef52120b8db99f5bdbbdd4019b5ea4bcfef14b0c19d261268da8afdc24", "0x3007c62f678a503e568534487bc5b0bc651f37bbe1f34668b4c8a360f15ba3c3"],
+    "lastQueriedBlock": "0x9f30a8"
+}
+  ```
+</details>
+
+**Retrieve historical leaves cache**
+
+##### Parameters
+
+- `target_system` (Could be `evm` or `substrate`).
+- `chain_id`
+- `contract_address`
+
+##### For evm
+```
+/api/v1/encrypted_outputs/evm/4/0x626fec5ffa7bf1ee8ced7dabde545630473e3abb
+```
+
+<details>
+  <summary>Expected Response</summary>
+
+  ```json
+   {
+    "encrypted_outputs": ["0x2e5c62af48845c095bfa9b90b8ec9f6b7bd98fb3ac2dd3039050a64b919951dd", "0x0f89f0ef52120b8db99f5bdbbdd4019b5ea4bcfef14b0c19d261268da8afdc24", "0x3007c62f678a503e568534487bc5b0bc651f37bbe1f34668b4c8a360f15ba3c3"],
     "lastQueriedBlock": "0x9f30a8"
 }
   ```
