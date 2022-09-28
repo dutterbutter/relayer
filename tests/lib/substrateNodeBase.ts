@@ -15,6 +15,7 @@
  *
  */
 
+import '@webb-tools/protocol-substrate-types';
 import fs from 'fs';
 import getPort, { portNumbers } from 'get-port';
 import { ChildProcess, execSync } from 'child_process';
@@ -176,7 +177,7 @@ export abstract class SubstrateNodeBase<TypedEvent extends SubstrateEvent> {
     const api = await this.api();
     const keyring = new Keyring({ type: 'sr25519' });
     const sudoKey = keyring.addFromUri(`//Alice`);
-    const sudoCall = api.tx.sudo!.sudo!(tx);
+    const sudoCall = api.tx.sudo.sudo(tx);
     return new Promise((resolve, reject) => {
       sudoCall.signAndSend(
         sudoKey,

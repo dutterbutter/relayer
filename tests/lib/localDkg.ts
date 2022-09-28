@@ -17,7 +17,7 @@
 /// A Helper Class to Start and Manage a Local DKG Node.
 /// This Could be through a Docker Container or a Local Compiled node.
 
-import '@webb-tools/types';
+import '@nepoche/dkg-substrate-types';
 import { spawn } from 'child_process';
 import { ECPairAPI, TinySecp256k1Interface, ECPairFactory } from 'ecpair';
 import isCI from 'is-ci';
@@ -122,7 +122,7 @@ export class LocalDkg extends SubstrateNodeBase<TypedEvent> {
   // get chainId
   public async getChainId(): Promise<number> {
     const api = await super.api();
-    let chainId = (await api.consts.dkgProposals.chainIdentifier).toNumber();
+    const chainId = (await api.consts.dkgProposals.chainIdentifier).toNumber();
     return chainId;
   }
 

@@ -245,10 +245,11 @@ describe('Vanchor Transaction relayer', function () {
       vanchor1.contract.address
     );
     expect(response.status).equal(200);
-    let leavesStore = response.json() as Promise<LeavesCacheResponse>;
+    const leavesStore = response.json() as Promise<LeavesCacheResponse>;
     leavesStore.then((resp) => {
       expect(resp.leaves.length).to.equal(10);
-    });
+      return;
+    }).catch((e) => console.log(e));
   });
 
   it('number of deposits made should be equal to number of encrypted outputs in cache', async () => {
@@ -323,10 +324,11 @@ describe('Vanchor Transaction relayer', function () {
     );
     expect(response.status).equal(200);
 
-    let store = response.json() as Promise<EncryptedOutputsCacheResponse>;
+    const store = response.json() as Promise<EncryptedOutputsCacheResponse>;
     store.then((resp) => {
       expect(resp.encrypted_outputs.length).to.equal(10);
-    });
+      return;
+    }).catch((e) => console.log(e));
   });
 
   after(async () => {

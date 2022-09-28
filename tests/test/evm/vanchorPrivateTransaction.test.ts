@@ -253,7 +253,7 @@ describe('Vanchor Private Tx relaying with mocked governor', function () {
       },
     });
 
-    let output = await setupVanchorEvmTx(
+    const output = await setupVanchorEvmTx(
       depositUtxo,
       localChain1,
       localChain2,
@@ -335,7 +335,7 @@ describe('Vanchor Private Tx relaying with mocked governor', function () {
       },
     });
 
-    let output = await setupVanchorEvmTx(
+    const output = await setupVanchorEvmTx(
       depositUtxo,
       localChain1,
       localChain2,
@@ -421,7 +421,7 @@ describe('Vanchor Private Tx relaying with mocked governor', function () {
       },
     });
 
-    let output = await setupVanchorEvmTx(
+    const output = await setupVanchorEvmTx(
       depositUtxo,
       localChain1,
       localChain2,
@@ -508,7 +508,7 @@ describe('Vanchor Private Tx relaying with mocked governor', function () {
       },
     });
 
-    let output = await setupVanchorEvmTx(
+    const output = await setupVanchorEvmTx(
       depositUtxo,
       localChain1,
       localChain2,

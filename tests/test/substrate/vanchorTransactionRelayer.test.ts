@@ -17,7 +17,7 @@
 // This our basic Substrate VAnchor Transaction Relayer Tests.
 // These are for testing the basic relayer functionality. which is just to relay transactions for us.
 
-import '@webb-tools/types';
+import '@webb-tools/protocol-substrate-types';
 import { expect } from 'chai';
 import getPort, { portNumbers } from 'get-port';
 import temp from 'temp';
@@ -93,7 +93,7 @@ describe('Substrate VAnchor Transaction Relayer Tests', function () {
     const api = await aliceNode.api();
     await api.isReady;
 
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
 
     await aliceNode.writeConfig(`${tmpDirPath}/${aliceNode.name}.json`, {
       suri: '//Charlie',
@@ -116,7 +116,7 @@ describe('Substrate VAnchor Transaction Relayer Tests', function () {
     const api = await aliceNode.api();
     const account = createAccount('//Dave');
     //create vanchor
-    let createVAnchorCall = api.tx.vAnchorBn254!.create!(1, 30, 0);
+    const createVAnchorCall = api.tx.vAnchorBn254.create(1, 30, 0);
     // execute sudo transaction.
     await aliceNode.sudoExecuteTransaction(createVAnchorCall);
 
@@ -217,7 +217,7 @@ describe('Substrate VAnchor Transaction Relayer Tests', function () {
       encryptedOutput2: u8aToHex(comEnc2),
     };
 
-    let vanchorProofData = {
+    const vanchorProofData = {
       proof: `0x${data.proof}`,
       publicAmount: data.publicAmount,
       roots: rootsSet,
@@ -233,7 +233,7 @@ describe('Substrate VAnchor Transaction Relayer Tests', function () {
     const indexBeforeInsetion = Math.max(leafsCount - 1, 0);
 
     // now we call the vanchor transact
-    let transactCall = api.tx.vAnchorBn254!.transact!(
+    const transactCall = api.tx.vAnchorBn254!.transact!(
       treeId,
       vanchorProofData,
       extData
@@ -250,7 +250,7 @@ describe('Substrate VAnchor Transaction Relayer Tests', function () {
     });
 
     // chainId
-    let chainIdentifier = await aliceNode.getChainId();
+    const chainIdentifier = await aliceNode.getChainId();
     const chainIdHex = chainIdentifier.toString(16);
     // now we call relayer leaf API to check no of leaves stored in LeafStorageCache
     // are equal to no of deposits made.
@@ -259,10 +259,11 @@ describe('Substrate VAnchor Transaction Relayer Tests', function () {
       treeId.toString()
     );
     expect(response.status).equal(200);
-    let leavesStore = response.json() as Promise<LeavesCacheResponse>;
+    const leavesStore = response.json() as Promise<LeavesCacheResponse>;
     leavesStore.then((resp) => {
       expect(indexBeforeInsetion + 2).to.equal(resp.leaves.length);
-    });
+      return;
+    }).catch((e) => console.log(e));
   });
 
   after(async () => {
@@ -275,7 +276,7 @@ describe('Substrate VAnchor Transaction Relayer Tests', function () {
 // Helper methods, we can move them somewhere if we end up using them again.
 
 function currencyToUnitI128(currencyAmount: number) {
-  let bn = BigNumber.from(currencyAmount);
+  const bn = BigNumber.from(currencyAmount);
   return bn.mul(1_000_000_000_000);
 }
 

@@ -1,7 +1,7 @@
 // This our basic Substrate Transaction Relayer Tests.
 // These are for testing the basic relayer functionality. which is just relay transactions for us.
 
-import '@webb-tools/types';
+import '@webb-tools/protocol-substrate-types';
 import { expect } from 'chai';
 import getPort, { portNumbers } from 'get-port';
 import temp from 'temp';
@@ -58,7 +58,7 @@ describe('Substrate Mixer Transaction Relayer', function () {
     const api = await aliceNode.api();
     await api.isReady;
 
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
 
     await aliceNode.writeConfig(`${tmpDirPath}/${aliceNode.name}.json`, {
       suri: '//Charlie',
@@ -88,12 +88,12 @@ describe('Substrate Mixer Transaction Relayer', function () {
     );
 
     // get the initial balance
-    let { nonce, data: balance } = await api.query.system.account(
+    const { nonce, data: balance } = await api.query.system.account(
       withdrawalProof.recipient
     );
     // get chainId
-    let chainId = await aliceNode.getChainId();
-    let initialBalance = balance.free.toBigInt();
+    const chainId = await aliceNode.getChainId();
+    const initialBalance = balance.free.toBigInt();
     // now we need to submit the withdrawal transaction.
     const txHash = await webbRelayer.substrateMixerWithdraw({
       chainId: chainId,
@@ -111,7 +111,7 @@ describe('Substrate Mixer Transaction Relayer', function () {
     // get the balance after withdrawal is done and see if it increases
     const { nonce: nonceAfter, data: balanceAfter } =
       await api.query.system.account(withdrawalProof.recipient);
-    let balanceAfterWithdraw = balanceAfter.free.toBigInt();
+    const balanceAfterWithdraw = balanceAfter.free.toBigInt();
     expect(balanceAfterWithdraw > initialBalance);
   });
 
@@ -128,7 +128,7 @@ describe('Substrate Mixer Transaction Relayer', function () {
 
     const invalidAddress = '5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy';
     // get chainId
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
     // now we need to submit the withdrawal transaction.
     try {
       // try to withdraw with invalid address
@@ -173,7 +173,7 @@ describe('Substrate Mixer Transaction Relayer', function () {
     const invalidProofBytes = u8aToHex(proofBytes);
     expect(withdrawalProof.proofBytes).to.not.eq(invalidProofBytes);
     // get chainId
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
     // now we need to submit the withdrawal transaction.
     try {
       // try to withdraw with invalid address
@@ -214,7 +214,7 @@ describe('Substrate Mixer Transaction Relayer', function () {
 
     const invalidFee = 100;
     // get chainId
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
     // now we need to submit the withdrawal transaction.
     try {
       // try to withdraw with invalid address
@@ -257,7 +257,7 @@ describe('Substrate Mixer Transaction Relayer', function () {
     const invalidRootBytes = u8aToHex(rootBytes);
     expect(withdrawalProof.proofBytes).to.not.eq(invalidRootBytes);
     // get chainId
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
     // now we need to submit the withdrawal transaction.
     try {
       // try to withdraw with invalid address
@@ -293,7 +293,7 @@ describe('Substrate Mixer Transaction Relayer', function () {
 
     const invalidAddress = '5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy';
     // get chainId
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
     // now we need to submit the withdrawal transaction.
     try {
       // try to withdraw with invalid address
@@ -336,7 +336,7 @@ describe('Substrate Mixer Transaction Relayer', function () {
     const invalidNullifierHash = u8aToHex(nullifierHash);
     expect(withdrawalProof.nullifierHash).to.not.eq(invalidNullifierHash);
     // get chainId
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
     // now we need to submit the withdrawal transaction.
     try {
       // try to withdraw with invalid address

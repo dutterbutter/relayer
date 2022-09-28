@@ -17,7 +17,7 @@
 
 // Testing different kind of proposals between DKG <=> Relayer <=> Signature Bridge.
 
-import '@webb-tools/types';
+import '@nepoche/dkg-substrate-types';
 import Chai, { expect } from 'chai';
 import ChaiAsPromised from 'chai-as-promised';
 import { Tokens, VBridge } from '@webb-tools/protocol-solidity';
@@ -112,7 +112,7 @@ describe.skip('Proposals (DKG <=> Relayer <=> SigBridge)', function () {
     });
 
     // get chainId
-    let chainId = await charlieNode.getChainId();
+    const chainId = await charlieNode.getChainId();
     await charlieNode.writeConfig(`${tmpDirPath}/${charlieNode.name}.json`, {
       suri: '//Charlie',
       chainId: chainId,
@@ -338,7 +338,7 @@ describe.skip('Proposals (DKG <=> Relayer <=> SigBridge)', function () {
     });
     await sleep(1000);
     // now we check that the token was added.
-    let tokens = await governedToken.contract.getTokens();
+    const tokens = await governedToken.contract.getTokens();
     expect(tokens.includes(testToken.contract.address)).to.eq(true);
   });
 
@@ -481,8 +481,8 @@ async function forceSubmitUnsignedProposal(
     data: `0x${string}`;
   }
 ) {
-  let api = await node.api();
-  let kind = api.createType(
+  const api = await node.api();
+  const kind = api.createType(
     'DkgRuntimePrimitivesProposalProposalKind',
     opts.kind
   );
@@ -494,7 +494,7 @@ async function forceSubmitUnsignedProposal(
       },
     })
     .toU8a();
-  let call = api.tx.dkgProposalHandler.forceSubmitUnsignedProposal(proposal);
-  let txHash = await node.sudoExecuteTransaction(call);
+  const call = api.tx.dkgProposalHandler.forceSubmitUnsignedProposal(proposal);
+  const txHash = await node.sudoExecuteTransaction(call);
   return txHash;
 }

@@ -17,7 +17,7 @@
 // This is Substrate VAnchor Transaction Relayer Tests.
 // In this test relayer on vanchor deposit will create and relay proposals to signature bridge pallet for execution
 
-import '@webb-tools/types';
+import '@webb-tools/protocol-substrate-types';
 import getPort, { portNumbers } from 'get-port';
 import temp from 'temp';
 import path from 'path';
@@ -66,13 +66,13 @@ describe('Substrate Signature Bridge Relaying On Vanchor Deposit <<>> Mocked Bac
 
   // Governer key
   const PK1 = u8aToHex(ethers.utils.randomBytes(32));
-  let governorWallet = new ethers.Wallet(PK1);
+  const governorWallet = new ethers.Wallet(PK1);
   // slice 0x04 from public key
-  let uncompressedKey = governorWallet
+  const uncompressedKey = governorWallet
     ._signingKey()
     .publicKey.toString()
     .slice(4);
-  let typedSourceChainId = calculateTypedChainId(ChainType.Substrate, 1080);
+  const typedSourceChainId = calculateTypedChainId(ChainType.Substrate, 1080);
 
   before(async () => {
     const usageMode: UsageMode = isCi
@@ -115,7 +115,7 @@ describe('Substrate Signature Bridge Relaying On Vanchor Deposit <<>> Mocked Bac
     const api = await aliceNode.api();
     await api.isReady;
 
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
     await aliceNode.writeConfig(`${tmpDirPath}/${aliceNode.name}.json`, {
       suri: '//Charlie',
       chainId: chainId,
@@ -124,13 +124,13 @@ describe('Substrate Signature Bridge Relaying On Vanchor Deposit <<>> Mocked Bac
     });
 
     // force set maintainer
-    let setMaintainerCall = api.tx.signatureBridge!.forceSetMaintainer!(
+    const setMaintainerCall = api.tx.signatureBridge!.forceSetMaintainer!(
       `0x${uncompressedKey}`
     );
     await aliceNode.sudoExecuteTransaction(setMaintainerCall);
 
     //whitelist chain
-    let whitelistChainCall =
+    const whitelistChainCall =
       api.tx.signatureBridge.whitelistChain(typedSourceChainId);
     await aliceNode.sudoExecuteTransaction(whitelistChainCall);
 
@@ -149,17 +149,17 @@ describe('Substrate Signature Bridge Relaying On Vanchor Deposit <<>> Mocked Bac
     const api = await aliceNode.api();
     const account = createAccount('//Dave');
     //create vanchor
-    let createVAnchorCall = api.tx.vAnchorBn254!.create!(1, 30, 0);
+    const createVAnchorCall = api.tx.vAnchorBn254!.create!(1, 30, 0);
     await aliceNode.sudoExecuteTransaction(createVAnchorCall);
 
     const nextTreeId = await api.query.merkleTreeBn254.nextTreeId();
     const treeId = nextTreeId.toNumber() - 1;
 
     // chainId
-    let chainId = await aliceNode.getChainId();
+    const chainId = await aliceNode.getChainId();
     console.log('step1');
     // now we set resource through proposal execution
-    let setResourceIdProposalCall = await setResourceIdProposal(
+    const setResourceIdProposalCall = await setResourceIdProposal(
       api,
       PK1,
       treeId,
@@ -206,13 +206,13 @@ async function setResourceIdProposal(
   treeId: number,
   chainId: number
 ): Promise<SubmittableExtrinsic<'promise'>> {
-  let functionSignature = hexToU8a('0x00000002', 32);
-  let nonce = 1;
-  let palletIndex = '0x2C';
-  let callIndex = '0x02';
-  let substrateTargetSystem = makeSubstrateTargetSystem(treeId, palletIndex);
+  const functionSignature = hexToU8a('0x00000002', 32);
+  const nonce = 1;
+  const palletIndex = '0x2C';
+  const callIndex = '0x02';
+  const substrateTargetSystem = makeSubstrateTargetSystem(treeId, palletIndex);
   // set resource ID
-  let resourceId = new ResourceId(
+  const resourceId = new ResourceId(
     toFixedHex(substrateTargetSystem, 20),
     ChainType.Substrate,
     chainId
@@ -229,16 +229,16 @@ async function setResourceIdProposal(
     callIndex,
   };
 
-  let proposalBytes = encodeResourceIdUpdateProposal(resourceIdUpdateProposal);
-  let hash = ethers.utils.keccak256(proposalBytes);
-  let msg = ethers.utils.arrayify(hash);
+  const proposalBytes = encodeResourceIdUpdateProposal(resourceIdUpdateProposal);
+  const hash = ethers.utils.keccak256(proposalBytes);
+  const msg = ethers.utils.arrayify(hash);
   // sign the message
   const sigObj = ecdsaSign(msg, hexToU8a(PK1));
-  let signature = new Uint8Array([...sigObj.signature, sigObj.recid]);
+  const signature = new Uint8Array([...sigObj.signature, sigObj.recid]);
   // execute proposal call to handler
-  let executeSetProposalCall =
+  const executeSetProposalCall =
     api.tx.vAnchorHandlerBn254.executeSetResourceProposal(resourceId.toU8a());
-  let setResourceCall = api.tx.signatureBridge!.setResourceWithSignature!(
+  const setResourceCall = api.tx.signatureBridge!.setResourceWithSignature!(
     calculateTypedChainId(ChainType.Substrate, chainId),
     executeSetProposalCall,
     u8aToHex(proposalBytes),
@@ -347,7 +347,7 @@ async function vanchorDeposit(
     encryptedOutput2: u8aToHex(comEnc2),
   };
 
-  let vanchorProofData = {
+  const vanchorProofData = {
     proof: `0x${data.proof}`,
     publicAmount: data.publicAmount,
     roots: rootsSet,
@@ -363,7 +363,7 @@ async function vanchorDeposit(
   const indexBeforeInsetion = Math.max(leafsCount - 1, 0);
 
   // now we call the vanchor transact
-  let transactCall = api.tx.vAnchorBn254!.transact!(
+  const transactCall = api.tx.vAnchorBn254!.transact!(
     treeId,
     vanchorProofData,
     extData
@@ -373,7 +373,7 @@ async function vanchorDeposit(
 }
 
 function currencyToUnitI128(currencyAmount: number) {
-  let bn = BigNumber.from(currencyAmount);
+  const bn = BigNumber.from(currencyAmount);
   return bn.mul(1_000_000_000_000);
 }
 

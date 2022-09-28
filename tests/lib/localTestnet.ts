@@ -134,8 +134,8 @@ export class LocalChain {
       .execSync('git rev-parse --show-toplevel')
       .toString()
       .trim();
-    let webbTokens1 = new Map<number, GovernedTokenWrapper | undefined>();
-    webbTokens1.set(this.chainId, null!);
+    const webbTokens1 = new Map<number, GovernedTokenWrapper | undefined>();
+    webbTokens1.set(this.chainId, undefined);
     const vBridgeInput: VBridge.VBridgeInput = {
       vAnchorInputs: {
         asset: {
@@ -215,12 +215,12 @@ export class LocalChain {
       .execSync('git rev-parse --show-toplevel')
       .toString()
       .trim();
-    let webbTokens1: Map<number, GovernedTokenWrapper | undefined> = new Map<
+    const webbTokens1: Map<number, GovernedTokenWrapper | undefined> = new Map<
       number,
       GovernedTokenWrapper | undefined
     >();
-    webbTokens1.set(this.chainId, null!);
-    webbTokens1.set(otherChain.chainId, null!);
+    webbTokens1.set(this.chainId, undefined);
+    webbTokens1.set(otherChain.chainId, undefined);
     const vBridgeInput: VBridge.VBridgeInput = {
       vAnchorInputs: {
         asset: {
@@ -300,9 +300,13 @@ export class LocalChain {
         console.log('entry: ', entry);
         console.log(await chainBridgeSide.contract.signer.getAddress());
         const nonce = await chainBridgeSide.contract.proposalNonce();
+        
+        // Unsure why this loop is required. Perhaps something
+        // with attempting to run in parallel?
+        // eslint-disable-next-line no-constant-condition
         while (true) {
           try {
-            let tx = await chainBridgeSide.transferOwnership(
+            const tx = await chainBridgeSide.transferOwnership(
               entry[1],
               nonce.toNumber()
             );
@@ -328,11 +332,8 @@ export class LocalChain {
     const localAnchor = bridge.getVAnchor(this.chainId);
     const side = bridge.getVBridgeSide(this.chainId);
     const wallet = opts.relayerWallet ?? side.governor;
-    const otherChainIds = Array.from(bridge.vBridgeSides.keys()).filter(
-      (chainId) => chainId !== this.chainId
-    );
 
-    let contracts: Contract[] = [
+    const contracts: Contract[] = [
       // first the local Anchor
       {
         contract: 'VAnchor',
@@ -517,7 +518,7 @@ export async function setupVanchorEvmTx(
   extData: IVariableAnchorExtData;
   publicInputs: IVariableAnchorPublicInputs;
 }> {
-  let extAmount = ethers.BigNumber.from(0).sub(depositUtxo.amount);
+  const extAmount = ethers.BigNumber.from(0).sub(depositUtxo.amount);
 
   const dummyOutput1 = await CircomUtxo.generateUtxo({
     curve: 'Bn254',
@@ -567,7 +568,6 @@ export async function setupVanchorEvmTx(
     chainId: depositUtxo.chainId,
     originChainId: depositUtxo.originChainId,
     blinding: hexToU8a(depositUtxo.blinding),
-    privateKey: hexToU8a(depositUtxo.secret_key),
     keypair: randomKeypair,
     index: depositUtxoIndex.toString(),
   });
