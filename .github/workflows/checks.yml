@@ -83,8 +83,11 @@ jobs:
       - name: install system build dependencies
         run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install ${DEV_PACKAGES}
 
-      # - name: set environment variable for pkg-config
-      #   run: export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig
+      - name: set environment variable for pkg-config
+        run: export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig
+
+      - name: set environment variable for OPENSSL_DIR
+        run: export OPENSSL_DIR="/usr/local/ssl"
 
       - uses: actions/checkout@v3
         with:
