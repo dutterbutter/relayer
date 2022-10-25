@@ -107,10 +107,9 @@ jobs:
           path: /tmp/
       - run: chmod +x /tmp/cross
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
-      - name: Install openssl for aarch linux
-        if: matrix.target == 'aarch64-unknown-linux-musl'
-        run: sudo apt-get install pkg-config libssl-dev
-      - run: ci/build.bash /tmp/cross ${{ matrix.target }}
+
+      - run: cargo build --release --target ${{ matrix.target }}
+      
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
