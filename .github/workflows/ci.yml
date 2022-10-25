@@ -12,10 +12,6 @@ env:
   ETH1_INFURA_API_KEY: ${{ secrets.ETH1_INFURA_API_KEY }}
 
 jobs:
-  # This job downloads and stores `cross` as an artifact, so that it can be
-  # redownloaded across all of the jobs. Currently this copied pasted between
-  # `ci.yml` and `deploy.yml`. Make sure to update both places when making
-  # changes.
   install-cross:
     runs-on: ubuntu-latest
     steps:
