@@ -35,13 +35,13 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
-          args: --release --target=${{ matrix.job.target }} --locked
+          args: --release --target=${{ matrix.target }} --locked
           command: build
 
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
-          args: --release --target=${{ matrix.job.target }} --locked
+          args: --release --target=${{ matrix.target }} --locked
           command: test
 
     strategy:
@@ -70,7 +70,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
-          args: --release --target=${{ matrix.job.target }} --locked
+          args: --release --target=${{ matrix.target }} --locked
           command: build
 
       - name: Use Node.js
@@ -88,7 +88,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
-          args: --release --target=${{ matrix.job.target }} --locked
+          args: --release --target=${{ matrix.target }} --locked
           command: test
 
         if: matrix.target == 'x86_64-unknown-linux-musl'
