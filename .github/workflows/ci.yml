@@ -2,14 +2,15 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ] 
+
+  workflow_dispatch:
 env:
-  DEV_PACKAGES: build-essential musl musl-dev musl-tools libssl-dev pkg-config
+  DEV_PACKAGES: build-essential musl musl-dev musl-tools libssl-dev pkg-config libc
   ETH1_INFURA_API_KEY: ${{ secrets.ETH1_INFURA_API_KEY }}
+
 jobs:
   # This job downloads and stores `cross` as an artifact, so that it can be
   # redownloaded across all of the jobs. Currently this copied pasted between
@@ -24,7 +25,7 @@ jobs:
       - uses: XAMPPRocky/get-github-release@v1
         id: cross
         with:
-          owner: rust-embedded
+          owner: cross-rs
           repo: cross
           matches: ${{ matrix.platform }}
           token: ${{ secrets.GITHUB_TOKEN }}
