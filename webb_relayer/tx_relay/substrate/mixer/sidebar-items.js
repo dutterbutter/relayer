@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["handle_substrate_mixer_relay_tx","Handler for Substrate Mixer commands"]]});

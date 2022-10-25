@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Webb Relayer Crate 🕸️"><meta name="keywords" content="rust, rustlang, rust-lang, webb_relayer"><title>webb_relayer - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../webb_relayer/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../webb_relayer/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate webb_relayer</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.4.1</li><li><a id="all-types" href="all.html">All Items</a></li></div></ul><section><div class="block"><ul><li><a href="#modules">Modules</a></li><li><a href="#enums">Enums</a></li><li><a href="#types">Type Definitions</a></li></ul></div></section><div id="sidebar-vars" data-name="webb_relayer" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../webb_relayer/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">webb_relayer</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/webb_relayer/lib.rs.html#15-108">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="webb-relayer-crate-"><a href="#webb-relayer-crate-">Webb Relayer Crate 🕸️</a></h2>
+<p>A crate used to relaying updates and transactions for the Webb Anchor protocol.</p>
+<h3 id="overview"><a href="#overview">Overview</a></h3>
+<p>In the Webb Protocol, the relayer is a multi-faceted oracle, data relayer, and protocol
+governance participant. Relayers fulfill the role of an oracle where the external data sources that
+they listen to are the state of the anchors for a bridge. Relayers, as their name entails, relay
+information for a connected set of Anchors on a bridge. This information is then used to update
+the state of each Anchor and allow applications to reference, both privately and potentially not,
+properties of data stored across the other connected Anchors.</p>
+<p>The relayer system is composed of three main components. Each of these components should be thought of as entirely
+separate because they could be handled by different entities entirely.</p>
+<ol>
+<li>Private transaction relaying (of user bridge transactions like Tornado Cash’s relayer)</li>
+<li>Data querying (for zero-knowledge proof generation)</li>
+<li>Data proposing and signature relaying (of DKG proposals)</li>
+</ol>
+<h5 id="private-transaction-relaying"><a href="#private-transaction-relaying">Private Transaction Relaying</a></h5>
+<p>The relayer allows for submitting proofs for privacy-preserving transactions against the Mixer, Anchor and
+VAnchor protocols. The users generate zero-knowledge proof data, format a proper payload, and submit
+it to a compatible relayer for submission.</p>
+<h5 id="data-querying"><a href="#data-querying">Data Querying</a></h5>
+<p>The relayer also supplements users who need to generate witness data for their zero-knowledge proofs.
+The relayers cache the leaves of the trees of Mixer, Anchor or VAnchor that they are supporting.
+This allows users to query for the leaf data faster than querying from a chain directly.</p>
+<h5 id="data-proposing-and-signature-relaying"><a href="#data-proposing-and-signature-relaying">Data Proposing and Signature Relaying</a></h5>
+<p>The relayer is tasked with relaying signed data payloads from the DKG’s activities and plays an important
+role as it pertains to the Anchor Protocol. The relayer is responsible for submitting the unsigned and
+signed anchor update proposals to and from the DKG before and after signing occurs.</p>
+<p>This role can be divided into two areas:</p>
+<ol>
+<li>Proposing</li>
+<li>Relaying</li>
+</ol>
+<p>The relayer is the main agent in the system who proposes anchor updates to the DKG for signing. That is,
+the relayer acts as an oracle over the merkle trees of the Anchors and VAnchors. When new insertions into
+the merkle trees occur, the relayer crafts an update proposal that is eventually proposed to the DKG for signing.</p>
+<p>The relayer is also responsible for relaying signed proposals. When anchor updates are signed, relayers are
+tasked with submitting these signed payloads to the smart contract SignatureBridges that verify and handle
+valid signed proposals. For all other signed proposals, the relayer is tasked with relaying these payloads
+to the SignatureBridge instances and/or Governable instances.</p>
+<p><strong>The responsibility for a relayer to the DKG (governance system) can be summarized as follows:</strong></p>
+<p>The relayers act as proposers of proposals intended to be signed by the distributed key generation
+protocol (DKG).</p>
+<ol>
+<li>The relayers are listening to and proposing updates.</li>
+<li>The DKG is signing these updates using a threshold-signature scheme.</li>
+</ol>
+<p>We require a threshold of relayers (<em>really proposers</em>) to agree on the update in order to move the update
+into a queue for the DKG to sign from.</p>
+<h2 id="features"><a href="#features">Features</a></h2>
+<p>There are several feature flags that control how much is available as part of the crate, both
+<code>evm-runtime</code>, <code>substrate-runtime</code> are enabled by default.</p>
+<ul>
+<li><code>evm-runtime</code>: Enables the EVM runtime. By default, this is enabled.</li>
+<li><code>substrate-runtime</code>: Enables the substrate runtime. By default, this is enabled.</li>
+<li><code>integration-tests</code>: Enables integration tests. By default, this is disabled.</li>
+</ul>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="context/index.html" title="webb_relayer::context mod">context</a></div><div class="item-right docblock-short"><p>A module for managing the context of the relayer.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="events_watcher/index.html" title="webb_relayer::events_watcher mod">events_watcher</a></div><div class="item-right docblock-short"><p>A module that listens for events on a given chain.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="handler/index.html" title="webb_relayer::handler mod">handler</a></div><div class="item-right docblock-short"><p>A module containing a collection of executable routines.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="metric/index.html" title="webb_relayer::metric mod">metric</a></div><div class="item-right docblock-short"><p>Metrics functionality</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="probe/index.html" title="webb_relayer::probe mod">probe</a></div><div class="item-right docblock-short"><p>A module used for debugging relayer lifecycle, sync state, or other relayer state.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="proposal_signing_backend/index.html" title="webb_relayer::proposal_signing_backend mod">proposal_signing_backend</a></div><div class="item-right docblock-short"><p>A module containing proposal signing backend (dkg and mocked).</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="service/index.html" title="webb_relayer::service mod">service</a></div><div class="item-right docblock-short"><p>A module for starting long-running tasks for event watching.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="tx_queue/index.html" title="webb_relayer::tx_queue mod">tx_queue</a></div><div class="item-right docblock-short"><p>A module for managing the transaction queue for the relayer.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="tx_relay/index.html" title="webb_relayer::tx_relay mod">tx_relay</a></div><div class="item-right docblock-short"><p>Transaction relaying handlers</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.Error.html" title="webb_relayer::Error enum">Error</a></div><div class="item-right docblock-short"><p>An enum of all possible errors that could be encountered during the execution of the Webb
+Relayer.</p>
+</div></div></div><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="type" href="type.Result.html" title="webb_relayer::Result type">Result</a></div><div class="item-right docblock-short"><p>A type alias for the result for webb relayer, that uses the <code>Error</code> enum.</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="webb_relayer" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (70b3681bf 2022-05-14)" ></div>
+</body></html>

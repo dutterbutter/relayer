@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["evm","EVM Transaction Queue."],["substrate","Substrate Transaction Queue."]]});

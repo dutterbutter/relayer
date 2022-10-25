@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["webb_relayer"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html\" title=\"trait core::marker::Copy\">Copy</a> for <a class=\"enum\" href=\"webb_relayer/probe/enum.Kind.html\" title=\"enum webb_relayer::probe::Kind\">Kind</a>","synthetic":false,"types":["webb_relayer::probe::Kind"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
