@@ -109,7 +109,7 @@ jobs:
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
 
       - run: cargo build --release --target ${{ matrix.target }}
-      
+
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
@@ -121,6 +121,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: ci/test.bash /tmp/cross ${{ matrix.target }}
+      
         if: matrix.target == 'x86_64-unknown-linux-musl'
       - run: cargo build --features integration-tests,cli
         if: matrix.target == 'x86_64-unknown-linux-musl'
