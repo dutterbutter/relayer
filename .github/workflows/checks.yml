@@ -83,11 +83,11 @@ jobs:
       - name: install system build dependencies
         run: sudo apt-get update && sudo apt-get upgrade && sudo apt-get install ${DEV_PACKAGES}
 
-      - name: set environment variable for pkg-config
-        run: export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig
+      # - name: set environment variable for pkg-config
+      #   run: export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig
 
-      - name: set environment variable for OPENSSL_DIR
-        run: export OPENSSL_DIR="/usr/local/ssl"
+      # - name: set environment variable for OPENSSL_DIR
+      #   run: export OPENSSL_DIR="/usr/local/ssl"
 
       - uses: actions/checkout@v3
         with:
@@ -99,17 +99,15 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
-      - name: Download Cross
-        uses: actions/download-artifact@v1
-        with:
-          name: cross-linux-musl
-          path: /tmp/
-
-      - run: chmod +x /tmp/cross
+      # - name: Download Cross
+      #   uses: actions/download-artifact@v1
+      #   with:
+      #     name: cross-linux-musl
+      #     path: /tmp/
 
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
 
-      - run: ci/build.bash /tmp/cross ${{ matrix.target }}
+      - run: ci/build.bash ${{ matrix.target }}
 
       - name: Use Node.js
         uses: actions/setup-node@v3
