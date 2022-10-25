@@ -8,7 +8,7 @@ on:
 
   workflow_dispatch:
 env:
-  DEV_PACKAGES: build-essential musl musl-dev musl-tools libssl-dev pkg-config libc
+  DEV_PACKAGES: build-essential musl musl-dev musl-tools libssl-dev pkg-config libc6
   ETH1_INFURA_API_KEY: ${{ secrets.ETH1_INFURA_API_KEY }}
 
 jobs:
