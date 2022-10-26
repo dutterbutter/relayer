@@ -8,7 +8,7 @@ on:
 
   workflow_dispatch:
 env:
-  DEV_PACKAGES: build-essential musl musl-dev musl-tools pkg-config libssl-dev libc6
+  DEV_PACKAGES: build-essential musl musl-dev musl-tools pkg-config libssl-dev librust-openssl-sys-dev
   ETH1_INFURA_API_KEY: ${{ secrets.ETH1_INFURA_API_KEY }}
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
-          args: --release --target=${{ matrix.target }} --locked
+          args: --release --target=${{ matrix.target }} --features native-tls/vendored --locked
           command: build
 
       - uses: actions-rs/cargo@v1
@@ -70,7 +70,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
-          args: --release --target=${{ matrix.target }} --locked
+          args: --release --target=${{ matrix.target }} --features native-tls/vendored --locked
           command: build
 
       - name: Use Node.js
